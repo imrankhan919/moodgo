@@ -1,0 +1,19 @@
+{
+  "name": "moodgo",
+  "version": "1.0.0",
+  "description": "MoodGo is a full-stack MERN application that lets users **discover, create, and book events** while interacting with an intelligent AI chatbot for instant assistance about pricing, schedules, recommendations, and more.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js"
+  },
+  "author": "Imran Khan",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.2.1"
+  }
+}
