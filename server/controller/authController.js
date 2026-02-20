@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
 import User from "../models/userModel.js"
 
 const registerUser = async (req, res) => {
@@ -38,7 +39,15 @@ const registerUser = async (req, res) => {
         throw new Error("User not created!")
     }
 
-    res.status(201).json(user)
+    res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isAdmin: user.isAdmin,
+        isActive: user.isActive,
+        token: generateToken(user._id)
+    })
 
 
 }
@@ -58,7 +67,15 @@ const loginUser = async (req, res) => {
 
 
     if (user && await bcrypt.compare(password, user.password)) {
-        res.status(200).json(user)
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            isAdmin: user.isAdmin,
+            isActive: user.isActive,
+            token: generateToken(user._id)
+        })
     } else {
         res.status(401)
         throw new Error("Invalid Credentials!")
@@ -67,6 +84,19 @@ const loginUser = async (req, res) => {
 }
 
 
-const authController = { registerUser, loginUser }
+// Private Controller
+const privateController = (req, res) => {
+    res.send("Private Controller " + req.user.name)
+}
+
+
+
+// Generate Token 
+export const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '10d' })
+}
+
+
+const authController = { registerUser, loginUser, privateController }
 
 export default authController
