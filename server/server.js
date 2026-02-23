@@ -3,9 +3,12 @@ import dotenv from "dotenv"
 import colors from "colors"
 
 // Local Imports
-import authRoutes from "./routes/authRoutes.js"
 import connectDB from "./config/dbConfg.js"
 import errorHandler from "./middleware/errorHandler.js"
+import authRoutes from "./routes/authRoutes.js"
+import adminRoutes from "./routes/adminRoutes.js"
+
+
 
 
 
@@ -38,6 +41,8 @@ app.get("/", (req, res) => {
 // Auth Routes
 app.use("/api/auth", authRoutes)
 
+// Admin Routes
+app.use("/api/admin", adminRoutes)
 
 // Error Handler
 app.use(errorHandler)
