@@ -7,7 +7,7 @@ import connectDB from "./config/dbConfg.js"
 import errorHandler from "./middleware/errorHandler.js"
 import authRoutes from "./routes/authRoutes.js"
 import adminRoutes from "./routes/adminRoutes.js"
-
+import eventRoutes from "./routes/eventRoutes.js"
 
 
 
@@ -43,6 +43,9 @@ app.use("/api/auth", authRoutes)
 
 // Admin Routes
 app.use("/api/admin", adminRoutes)
+
+// Event Routes
+app.use("/api/event", eventRoutes)
 
 // Error Handler
 app.use(errorHandler)
