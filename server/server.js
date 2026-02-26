@@ -8,7 +8,7 @@ import errorHandler from "./middleware/errorHandler.js"
 import authRoutes from "./routes/authRoutes.js"
 import adminRoutes from "./routes/adminRoutes.js"
 import eventRoutes from "./routes/eventRoutes.js"
-
+import orderRoutes from "./routes/orderRoutes.js"
 
 
 
@@ -45,7 +45,10 @@ app.use("/api/auth", authRoutes)
 app.use("/api/admin", adminRoutes)
 
 // Event Routes
-app.use("/api/event", eventRoutes)
+app.use("/api/events", eventRoutes)
+
+app.use("/api/order", orderRoutes)
+
 
 // Error Handler
 app.use(errorHandler)

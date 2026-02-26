@@ -8,6 +8,9 @@ const router = express.Router()
 
 
 router.post("/", protect.forUser, upload.single('eventImage'), eventController.createEvent)
+router.get("/", protect.forUser, eventController.getEvents)
+router.get("/:eid", protect.forUser, eventController.getEvent)
+
 
 
 export default router

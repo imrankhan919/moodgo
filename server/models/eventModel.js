@@ -45,7 +45,7 @@ const eventSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         required: true,
-        default: true
+        default: false
     },
 }, {
     timestamps: true
