@@ -1,3 +1,4 @@
+import Coupon from "../models/couponModel.js"
 import Event from "../models/eventModel.js"
 import User from "../models/userModel.js"
 
@@ -56,12 +57,67 @@ const getAllOrders = (req, res) => {
 }
 
 
-const getAllCoupons = (req, res) => {
-    res.send("All Coupons!")
+const createCoupon = async (req, res) => {
+
+    const { couponCode, couponDiscount } = req.body
+
+    if (!couponCode || !couponDiscount) {
+        res.status(409)
+        throw new Error("Please fill all details!")
+    }
+
+    // Check if coupon is already exist 
+    const couponExist = await Coupon.findOne({ couponCode })
+
+    if (couponExist) {
+        res.status(409)
+        throw new Error("Coupon Already Exist")
+    }
+
+
+    const newCoupon = await Coupon.create({ couponCode, couponDiscount })
+
+    if (!newCoupon) {
+        res.status(409)
+        throw new Error("Coupon Not Created!")
+    }
+
+    res.status(201).json(newCoupon)
+
 }
 
 
 
-const adminController = { getAllUsers, getAllEvents, getAllRatings, getAllOrders, getAllCoupons, updateEvent }
+const getAllCoupons = async (req, res) => {
+
+    const coupons = await Coupon.find()
+
+    if (!coupons) {
+        res.status(404)
+        throw new Error("Coupons Not Found!")
+    }
+
+    res.status(200).json(coupons)
+
+}
+
+
+const updateCoupon = async (req, res) => {
+
+    const updatedCoupon = await Coupon.findByIdAndUpdate(req.params.cid, req.body, { new: true })
+
+    if (!updateCoupon) {
+        res.staus(409)
+        throw new Error("Coupon Not Updated!")
+    }
+
+    res.status(200).json(updatedCoupon)
+
+}
+
+
+
+
+const adminController = { getAllUsers, getAllEvents, getAllRatings, getAllOrders, getAllCoupons, updateEvent, createCoupon, updateCoupon }
 
 export default adminController
