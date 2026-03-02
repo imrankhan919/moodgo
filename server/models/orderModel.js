@@ -11,9 +11,13 @@ const orderSchema = new mongoose.Schema({
         ref: 'Event',
         required: true
     },
+    seats: {
+        type: Number,
+        required: true,
+    },
     status: {
         type: String,
-        enum: ['pending', 'confirm', 'cancelled'],
+        enum: ['pending', 'confirmed', 'cancelled'],
         required: true,
         default: 'pending'
     },
