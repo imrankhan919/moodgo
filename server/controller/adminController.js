@@ -1,6 +1,8 @@
 import Coupon from "../models/couponModel.js"
 import Event from "../models/eventModel.js"
+import Order from "../models/orderModel.js"
 import User from "../models/userModel.js"
+
 
 
 
@@ -52,8 +54,16 @@ const getAllRatings = (req, res) => {
 }
 
 
-const getAllOrders = (req, res) => {
-    res.send("All Orders!")
+const getAllOrders = async (req, res) => {
+    const orders = await Order.find()
+
+    if (!orders) {
+        res.status(404)
+        throw new Error("Order Not Found!")
+    }
+
+    res.status(200).json(orders)
+
 }
 
 

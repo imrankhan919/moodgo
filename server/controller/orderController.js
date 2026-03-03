@@ -62,9 +62,10 @@ const bookTicket = async (req, res) => {
 
     // Calculate Total Seats Booked
 
-    let myExistingBookedSeats = myOrders.reduce((acc, order) => acc + order.seats, 0)
+    let myExistingBookedSeats = myOrders
+        .filter((order) => order.status !== "cancelled")
+        .reduce((acc, order) => acc + order.seats, 0)
 
-    console.log(myExistingBookedSeats)
 
     if (myExistingBookedSeats >= 5) {
         res.status(409)
@@ -94,6 +95,11 @@ const bookTicket = async (req, res) => {
     })
 
 
+    // Decrease Available Seats
+    let updatedSeats = event.totalSeats - numberOfSeats
+    await Event.findByIdAndUpdate(event._id, { totalSeats: updatedSeats }, { new: true })
+
+
     if (!order) {
         res.status(409)
         throw new Error("Order Not Accepted")
@@ -105,7 +111,46 @@ const bookTicket = async (req, res) => {
 
 
 const cancelTicket = async (req, res) => {
-    res.send("Ticket Cancelled")
+
+    // Find Ticket
+    const ticketId = req.params.tid
+
+
+    let ticket = await Order.findById(ticketId)
+
+    if (!ticket) {
+        res.status(404)
+        throw new Error('Ticket Not Found!')
+    }
+
+    if (ticket.status === "cancelled") {
+        res.status(400)
+        throw new Error("Ticket Already Cancelled")
+    }
+
+    // Find Event
+    const event = await Event.findOne(ticket.event)
+
+    // Check Ticket Status
+    if (ticket.status === "expired") {
+        res.status(409)
+        throw new Error('Ticket Already Expired')
+    }
+
+    // Increase Available Seats
+    let updatedSeats = event.totalSeats + ticket.seats
+    await Event.findByIdAndUpdate(event._id, { totalSeats: updatedSeats }, { new: true })
+
+
+    const updatedTicket = await Order.findByIdAndUpdate(ticket._id, { status: "cancelled" }, { new: true })
+
+    if (!updatedTicket) {
+        res.status(409)
+        throw new Error("Ticket Not Cancelled")
+    }
+
+    res.status(200).json(updatedTicket)
+
 }
 
 const orderController = {
