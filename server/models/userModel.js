@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
         required: true
+    },
+    credits: {
+        type: Number,
+        default: 0,
+        required: true
     }
 }, {
     timestamps: true

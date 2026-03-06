@@ -20,6 +20,23 @@ const getAllUsers = async (req, res) => {
 }
 
 
+const updateUser = async (req, res) => {
+
+    const userId = req.params.uid
+
+    const updatedUser = await User.findByIdAndUpdate(userId, req.body, { new: true })
+
+    if (!updateUser) {
+        res.status(409)
+        throw new Error("User Not Updated")
+    }
+
+    res.status(200).json(updatedUser)
+
+}
+
+
+
 const getAllEvents = async (req, res) => {
     const events = await Event.find().populate('user')
 
@@ -128,6 +145,6 @@ const updateCoupon = async (req, res) => {
 
 
 
-const adminController = { getAllUsers, getAllEvents, getAllRatings, getAllOrders, getAllCoupons, updateEvent, createCoupon, updateCoupon }
+const adminController = { getAllUsers, updateUser, getAllEvents, getAllRatings, getAllOrders, getAllCoupons, updateEvent, createCoupon, updateCoupon }
 
 export default adminController

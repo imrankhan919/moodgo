@@ -1,6 +1,7 @@
 import Coupon from "../models/couponModel.js"
 import Event from "../models/eventModel.js"
 import Order from "../models/orderModel.js"
+import User from "../models/userModel.js"
 
 const getTickets = async (req, res) => {
 
@@ -85,19 +86,35 @@ const bookTicket = async (req, res) => {
         }
     }
 
+    const totalBillAmount = couponCode ? (event.ticketPrice - (event.ticketPrice * couponExists.couponDiscount / 100)) * numberOfSeats : event.ticketPrice * numberOfSeats
+
+    // Find User
+    let user = await User.findById(userId)
+
+
+    if (totalBillAmount > user.credits) {
+        res.status(409)
+        throw new Error("Not Enough Credits!")
+    }
+
+
     let order = await Order.create({
         user: req.user.id,
         event: eventId,
         seats: numberOfSeats,
         status: "confirmed",
         isDiscounted: couponCode ? true : false,
-        billedAmount: couponCode ? (event.ticketPrice - (event.ticketPrice * couponExists.couponDiscount / 100)) * numberOfSeats : event.ticketPrice * numberOfSeats
+        billedAmount: totalBillAmount
     })
 
 
     // Decrease Available Seats
     let updatedSeats = event.totalSeats - numberOfSeats
     await Event.findByIdAndUpdate(event._id, { totalSeats: updatedSeats }, { new: true })
+
+
+    // Decrease Credits
+    await User.findByIdAndUpdate(userId, { credits: user.credits - totalBillAmount }, { new: true })
 
 
     if (!order) {
@@ -111,6 +128,8 @@ const bookTicket = async (req, res) => {
 
 
 const cancelTicket = async (req, res) => {
+
+    let userId = req.user._id
 
     // Find Ticket
     const ticketId = req.params.tid
@@ -128,6 +147,9 @@ const cancelTicket = async (req, res) => {
         throw new Error("Ticket Already Cancelled")
     }
 
+    // Find User
+    let user = await User.findById(userId)
+
     // Find Event
     const event = await Event.findOne(ticket.event)
 
@@ -141,6 +163,8 @@ const cancelTicket = async (req, res) => {
     let updatedSeats = event.totalSeats + ticket.seats
     await Event.findByIdAndUpdate(event._id, { totalSeats: updatedSeats }, { new: true })
 
+    // Increase Credits
+    await User.findByIdAndUpdate(userId, { credits: user.credits + ticket.billedAmount }, { new: true })
 
     const updatedTicket = await Order.findByIdAndUpdate(ticket._id, { status: "cancelled" }, { new: true })
 

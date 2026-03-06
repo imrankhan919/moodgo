@@ -46,6 +46,7 @@ const registerUser = async (req, res) => {
         phone: user.phone,
         isAdmin: user.isAdmin,
         isActive: user.isActive,
+        credits: user.credits,
         token: generateToken(user._id)
     })
 
@@ -74,6 +75,7 @@ const loginUser = async (req, res) => {
             phone: user.phone,
             isAdmin: user.isAdmin,
             isActive: user.isActive,
+            credits: user.credits,
             token: generateToken(user._id)
         })
     } else {

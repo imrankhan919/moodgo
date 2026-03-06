@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes.js"
 import adminRoutes from "./routes/adminRoutes.js"
 import eventRoutes from "./routes/eventRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js"
+import commentRoutes from "./routes/commentRoutes.js"
 
 
 
@@ -49,6 +50,10 @@ app.use("/api/events", eventRoutes)
 
 // Ticket Booking Routes
 app.use("/api/order", orderRoutes)
+
+// Comment Routes
+app.use("/api/comment", commentRoutes)
+
 
 
 // Error Handler
