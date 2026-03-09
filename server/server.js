@@ -10,6 +10,8 @@ import adminRoutes from "./routes/adminRoutes.js"
 import eventRoutes from "./routes/eventRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js"
 import commentRoutes from "./routes/commentRoutes.js"
+import giveAnswer from "./controller/chatController.js"
+import protect from "./middleware/authMiddleware.js"
 
 
 
@@ -54,7 +56,8 @@ app.use("/api/order", orderRoutes)
 // Comment Routes
 app.use("/api/comment", commentRoutes)
 
-
+// Chat Route
+app.post("/api/chat", protect.forUser, giveAnswer)
 
 // Error Handler
 app.use(errorHandler)
