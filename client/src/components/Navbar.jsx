@@ -1,9 +1,23 @@
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
+import { logoutUser } from '../features/auth/authSlice'
 
 function Navbar() {
+
+  const dispatch = useDispatch()
+
+
+  const { user } = useSelector(state => state.auth)
+
   const location = useLocation()
 
   const isActive = (path) => location.pathname === path
+
+
+  const handleLogout = () => {
+    dispatch(logoutUser())
+  }
+
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0F]/80 backdrop-blur-lg border-b border-[#1F1F2E]">
@@ -42,20 +56,32 @@ function Navbar() {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              to="/login"
-              className="px-5 py-2 text-sm font-medium text-[#4F8EF7] border border-[#4F8EF7]/30 rounded-full hover:border-[#4F8EF7] transition-all duration-300 hover:scale-105"
-              style={{ fontFamily: 'DM Sans, sans-serif' }}
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-full hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105"
-              style={{ fontFamily: 'DM Sans, sans-serif' }}
-            >
-              Get Started
-            </Link>
+            {
+              user ? (
+                <button
+                  onClick={handleLogout}
+                  className="px-5 cursor-pointer py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-full hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105"
+                  style={{ fontFamily: 'DM Sans, sans-serif' }}
+                >
+                  Logout
+                </button>
+              ) : (<>
+                <Link
+                  to="/login"
+                  className="px-5 py-2 text-sm font-medium text-[#4F8EF7] border border-[#4F8EF7]/30 rounded-full hover:border-[#4F8EF7] transition-all duration-300 hover:scale-105"
+                  style={{ fontFamily: 'DM Sans, sans-serif' }}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-full hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105"
+                  style={{ fontFamily: 'DM Sans, sans-serif' }}
+                >
+                  Get Started
+                </Link>
+              </>)
+            }
           </div>
 
           {/* Mobile Menu Button */}
@@ -82,27 +108,41 @@ function Navbar() {
                   </Link>
                 ))}
                 <div className="pt-2 border-t border-[#1F1F2E] space-y-2">
-                  <Link
-                    to="/login"
-                    className="block px-4 py-3 text-center text-sm font-medium text-[#4F8EF7] border border-[#4F8EF7]/30 rounded-xl hover:border-[#4F8EF7] transition-all duration-300"
-                    style={{ fontFamily: 'DM Sans, sans-serif' }}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block px-4 py-3 text-center text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl transition-all duration-300"
-                    style={{ fontFamily: 'DM Sans, sans-serif' }}
-                  >
-                    Get Started
-                  </Link>
+                  {
+                    user ? (
+                      <button
+                        onClick={handleLogout}
+                        className="block px-4 py-3 text-center text-sm font-medium text-white bg-red-500 hover:bg-red-600 cursor-pointer rounded-xl transition-all duration-300"
+                        style={{ fontFamily: 'DM Sans, sans-serif' }}
+                      >
+                        Get Started
+                      </button>
+                    ) : (
+                      <>
+                        <Link
+                          to="/login"
+                          className="block px-4 py-3 text-center text-sm font-medium text-[#4F8EF7] border border-[#4F8EF7]/30 rounded-xl hover:border-[#4F8EF7] transition-all duration-300"
+                          style={{ fontFamily: 'DM Sans, sans-serif' }}
+                        >
+                          Login
+                        </Link>
+                        <Link
+                          to="/register"
+                          className="block px-4 py-3 text-center text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl transition-all duration-300"
+                          style={{ fontFamily: 'DM Sans, sans-serif' }}
+                        >
+                          Get Started
+                        </Link>
+                      </>
+                    )
+                  }
                 </div>
               </div>
             </div>
           </details>
-        </div>
-      </div>
-    </nav>
+        </div >
+      </div >
+    </nav >
   )
 }
 

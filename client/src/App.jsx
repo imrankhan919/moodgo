@@ -17,6 +17,7 @@ import AdminEvents from './pages/admin/AdminEvents'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminRatings from './pages/admin/AdminRatings'
 import AdminCoupons from './pages/admin/AdminCoupons'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   const location = useLocation()
@@ -85,6 +86,7 @@ function App() {
 
       {!isAdmin && <Footer />}
       {!isAdmin && <ChatWidget />}
+      <ToastContainer />
     </>
   )
 }

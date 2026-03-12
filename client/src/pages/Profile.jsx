@@ -1,6 +1,7 @@
 import { users, orders } from '../data/mockData'
 
 function Profile() {
+
   const user = users[0]
   const userOrders = orders.slice(0, 4)
   const tabs = ['My Bookings', 'Saved Events', 'Settings']
@@ -44,11 +45,10 @@ function Profile() {
           {tabs.map(tab => (
             <button
               key={tab}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                tab === activeTab
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${tab === activeTab
                   ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white'
                   : 'text-[#6B7280] hover:text-white'
-              }`}
+                }`}
             >
               {tab}
             </button>
@@ -64,11 +64,10 @@ function Profile() {
                 <p className="text-[#6B7280] text-sm">{order.bookedAt} · {order.tickets} ticket(s)</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${
-                  order.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                  order.status === 'cancelled' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                  'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-                }`}>
+                <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${order.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                    order.status === 'cancelled' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                      'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                  }`}>
                   {order.status}
                 </span>
                 <span className="text-[#4F8EF7] font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>${order.totalAmount}</span>

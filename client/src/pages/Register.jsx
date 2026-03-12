@@ -1,11 +1,59 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { registerUser } from '../features/auth/authSlice'
+import { toast } from 'react-toastify'
+import LoadingScreen from '../components/LoadingScreen'
 
 function Register() {
+
+  const { user, isLoading, isSuccess, isError, message } = useSelector(state => state.auth)
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", password: "" })
+
+  const { name, email, phone, password } = formData
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    dispatch(registerUser(formData))
+  }
+
+
+  useEffect(() => {
+
+    if (user) {
+      navigate("/profile")
+    }
+
+    if (isError && message) {
+      toast.error(message, { position: "top-center", theme: "dark" })
+    }
+
+  }, [user, isError, message])
+
+
+  if (isLoading) {
+    return (
+      <LoadingScreen />
+    )
+  }
+
+
   return (
     <div className="min-h-screen bg-[#0A0A0F] flex items-center justify-center px-4 pt-20" style={{ fontFamily: 'DM Sans, sans-serif' }}>
       {/* Subtle Grid Pattern */}
       <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
-      
+
       <div className="relative w-full max-w-4xl bg-[#111118] rounded-3xl border border-[#1F1F2E] overflow-hidden shadow-2xl">
         <div className="flex flex-col md:flex-row">
           {/* Left - Branding */}
@@ -33,73 +81,58 @@ function Register() {
             <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>Create Account</h3>
             <p className="text-[#6B7280] text-sm mb-8">Fill in your details to get started</p>
 
-            <form className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">First Name</label>
+                  <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Your Name</label>
                   <input
+                    name='name'
+                    value={name}
+                    onChange={handleChange}
                     type="text"
                     placeholder="John"
                     className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] focus:ring-1 focus:ring-[#4F8EF7] transition-all duration-300"
-                    readOnly
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Last Name</label>
+                  <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Your Phone</label>
                   <input
-                    type="text"
-                    placeholder="Doe"
+                    name='phone'
+                    value={phone}
+                    onChange={handleChange}
+                    type="phone"
+                    placeholder="9893721920"
                     className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] focus:ring-1 focus:ring-[#4F8EF7] transition-all duration-300"
-                    readOnly
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Email</label>
                 <input
+                  name='email'
+                  value={email}
+                  onChange={handleChange}
                   type="email"
                   placeholder="you@example.com"
                   className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] focus:ring-1 focus:ring-[#4F8EF7] transition-all duration-300"
-                  readOnly
                 />
               </div>
               <div>
                 <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Password</label>
                 <input
+                  name='password'
+                  value={password}
+                  onChange={handleChange}
                   type="password"
                   placeholder="••••••••"
                   className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] focus:ring-1 focus:ring-[#4F8EF7] transition-all duration-300"
-                  readOnly
                 />
               </div>
-              <div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <div className="w-4 h-4 rounded border border-[#1F1F2E] bg-[#0A0A0F]" />
-                  <span className="text-[#6B7280] text-xs">I agree to the <a href="#" className="text-[#4F8EF7] hover:underline">Terms of Service</a> and <a href="#" className="text-[#4F8EF7] hover:underline">Privacy Policy</a></span>
-                </label>
-              </div>
-              <button type="button" className="w-full py-3.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(79,142,247,0.4)] transition-all duration-300 hover:scale-105">
+
+              <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(79,142,247,0.4)] transition-all duration-300 hover:scale-105">
                 Create Account
               </button>
             </form>
-
-            {/* Divider */}
-            <div className="flex items-center gap-4 my-6">
-              <div className="flex-1 h-px bg-[#1F1F2E]" />
-              <span className="text-[#6B7280] text-xs uppercase">or continue with</span>
-              <div className="flex-1 h-px bg-[#1F1F2E]" />
-            </div>
-
-            {/* Social */}
-            <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-2 py-3 bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl text-white text-sm hover:border-[#4F8EF7]/30 transition-all duration-300">
-                <span>G</span> Google
-              </button>
-              <button className="flex items-center justify-center gap-2 py-3 bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl text-white text-sm hover:border-[#4F8EF7]/30 transition-all duration-300">
-                <span>⌘</span> GitHub
-              </button>
-            </div>
-
             <p className="text-center text-[#6B7280] text-sm mt-6">
               Already have an account? <Link to="/login" className="text-[#4F8EF7] hover:underline font-medium">Sign in</Link>
             </p>
