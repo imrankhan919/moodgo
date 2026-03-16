@@ -22,9 +22,29 @@ const getAllUsers = async (req, res) => {
 
 const updateUser = async (req, res) => {
 
+    let { isActive, credits } = req.body
+
+
+
     const userId = req.params.uid
 
-    const updatedUser = await User.findByIdAndUpdate(userId, req.body, { new: true })
+    let user = await User.findById(userId)
+
+    if (!user) {
+        res.status(404)
+        throw new Error('User Not Found!')
+    }
+
+    let updatedUser
+
+    if (credits) {
+        updatedUser = await User.findByIdAndUpdate(userId, { credits: user.credits + parseInt(credits) }, { new: true })
+    } else {
+        updatedUser = await User.findByIdAndUpdate(userId, { isActive: isActive }, { new: true })
+    }
+
+
+
 
     if (!updateUser) {
         res.status(409)

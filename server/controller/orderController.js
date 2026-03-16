@@ -68,9 +68,10 @@ const bookTicket = async (req, res) => {
         .reduce((acc, order) => acc + order.seats, 0)
 
 
-    if (myExistingBookedSeats >= 5) {
+
+    if (myExistingBookedSeats + parseInt(numberOfSeats) > 5) {
         res.status(409)
-        throw new Error("Only 5 Seats Allowed Per User!")
+        throw new Error(`Only 5 Seats Allowed Per User! ${5 - myExistingBookedSeats} Seats Available`)
     }
 
 
