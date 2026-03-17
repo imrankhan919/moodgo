@@ -1,9 +1,18 @@
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import EventCard from '../components/EventCard'
-import { events, comments } from '../data/mockData'
+import { comments } from '../data/mockData'
+import { useEffect } from 'react'
+import { getEvents } from '../features/event/eventSlice'
+import LoadingScreen from '../components/LoadingScreen'
 
 function Home() {
-  const featuredEvents = events.filter(e => e.isFeatured)
+
+  const { events, eventLoading, eventSuccess, eventError, eventErrorMessage } = useSelector(state => state.event)
+
+  const dispatch = useDispatch()
+
+  const featuredEvents = events.filter(e => e.isActive)
   const categories = [
     { emoji: '🎵', label: 'Music' },
     { emoji: '💻', label: 'Tech' },
@@ -14,6 +23,18 @@ function Home() {
   ]
   const trustedLogos = ['Spotify', 'Google', 'Meta', 'Apple', 'Netflix', 'Spotify', 'Google', 'Meta', 'Apple', 'Netflix']
   const testimonials = comments.filter(c => c.rating >= 4).slice(0, 3)
+
+
+  useEffect(() => {
+    // Fetch Events
+    dispatch(getEvents())
+  }, [])
+
+
+  if (eventLoading) {
+    return <LoadingScreen />
+  }
+
 
   return (
     <div className="min-h-screen bg-[#0A0A0F]" style={{ fontFamily: 'DM Sans, sans-serif' }}>
@@ -29,7 +50,7 @@ function Home() {
           {/* Grain SVG Filter */}
           <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
             <filter id="grain">
-              <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+              <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
             </filter>
             <rect width="100%" height="100%" filter="url(#grain)" />
           </svg>
@@ -142,7 +163,7 @@ function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredEvents.map(event => (
-            <EventCard key={event.id} event={event} />
+            <EventCard key={event._id} event={event} />
           ))}
         </div>
       </section>
@@ -196,7 +217,7 @@ function Home() {
           {/* Gradient Border Effect */}
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#4F8EF7]/10 to-[#8B5CF6]/10 pointer-events-none" />
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#4F8EF7] to-transparent" />
-          
+
           <div className="relative flex flex-col md:flex-row items-center gap-10">
             <div className="flex-1">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F8EF7]/10 border border-[#4F8EF7]/20 text-[#4F8EF7] text-xs font-medium mb-4">
@@ -213,7 +234,7 @@ function Home() {
                 <span>✨</span>
               </button>
             </div>
-            
+
             {/* Mock Chat Preview */}
             <div className="flex-shrink-0 w-full md:w-72 bg-[#0A0A0F] rounded-2xl border border-[#1F1F2E] p-4 space-y-3">
               <div className="flex items-center gap-2 pb-3 border-b border-[#1F1F2E]">
