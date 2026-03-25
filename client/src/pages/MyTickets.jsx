@@ -1,16 +1,44 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import TicketCard from '../components/TicketCard'
 import { orders } from '../data/mockData'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { getTickets } from '../features/orders/orderSlice'
+import LoadingScreen from '../components/LoadingScreen'
+import { toast } from 'react-toastify'
 
 function MyTickets() {
-  const tabs = ['All', 'Upcoming', 'Cancelled']
-  const activeTab = 'All'
 
-  const filteredOrders = activeTab === 'All'
-    ? orders
-    : activeTab === 'Upcoming'
-      ? orders.filter(o => o.status === 'confirmed' || o.status === 'pending')
-      : orders.filter(o => o.status === 'cancelled')
+  const { user } = useSelector(state => state.auth)
+  const { orders, orderLoading, orderSuccess, orderError, orderErrorMessage } = useSelector(state => state.order)
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+
+
+
+  useEffect(() => {
+    dispatch(getTickets())
+
+    // if (!user) {
+    //   navigate("/login")
+    // }
+
+
+    if (orderError && orderErrorMessage) {
+      toast.error(orderErrorMessage, { position: "top-center", theme: "dark" })
+    }
+
+  }, [orderError, orderErrorMessage, user])
+
+
+  if (orderLoading) {
+    return (
+      <LoadingScreen text='Loading Tickets...' />
+    )
+  }
+
 
   return (
     <div className="min-h-screen bg-[#0A0A0F] pt-24 pb-20" style={{ fontFamily: 'DM Sans, sans-serif' }}>
@@ -29,31 +57,16 @@ function MyTickets() {
           </span>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex gap-2 mb-8">
-          {tabs.map(tab => (
-            <button
-              key={tab}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                tab === activeTab
-                  ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white'
-                  : 'bg-[#111118] text-[#6B7280] border border-[#1F1F2E] hover:text-white hover:border-[#4F8EF7]/30'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
 
         {/* Tickets List */}
         <div className="space-y-4">
-          {filteredOrders.map(order => (
-            <TicketCard key={order.id} order={order} />
+          {orders.map(order => (
+            <TicketCard key={order._id} order={order} />
           ))}
         </div>
 
         {/* Empty State */}
-        {filteredOrders.length === 0 && (
+        {orders.length === 0 && (
           <div className="text-center py-20">
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[#111118] border border-[#1F1F2E] flex items-center justify-center">
               <span className="text-3xl">🎫</span>

@@ -47,7 +47,8 @@ const registerUser = async (req, res) => {
         isAdmin: user.isAdmin,
         isActive: user.isActive,
         credits: user.credits,
-        token: generateToken(user._id)
+        token: generateToken(user._id),
+        createdAt: user.createdAt
     })
 
 
@@ -76,7 +77,8 @@ const loginUser = async (req, res) => {
             isAdmin: user.isAdmin,
             isActive: user.isActive,
             credits: user.credits,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            createdAt: user.createdAt
         })
     } else {
         res.status(401)

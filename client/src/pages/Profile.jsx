@@ -1,11 +1,24 @@
-import { users, orders } from '../data/mockData'
+import { useSelector } from 'react-redux'
+import { orders } from '../data/mockData'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
 function Profile() {
 
-  const user = users[0]
+  const { user } = useSelector(state => state.auth)
+
+  const navigate = useNavigate()
+
   const userOrders = orders.slice(0, 4)
   const tabs = ['My Bookings', 'Saved Events', 'Settings']
   const activeTab = 'My Bookings'
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login")
+    }
+  }, [user])
+
 
   return (
     <div className="min-h-screen bg-[#0A0A0F] pt-20" style={{ fontFamily: 'DM Sans, sans-serif' }}>
@@ -18,11 +31,11 @@ function Profile() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-10 pb-20">
         {/* Avatar + Name */}
         <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 mb-8">
-          <img src={user.avatar} alt={user.name} className="w-32 h-32 rounded-2xl border-4 border-[#0A0A0F] shadow-xl object-cover" />
+          <img src={'https://i.pinimg.com/564x/81/8a/1b/818a1b89a57c2ee0fb7619b95e11aebd.jpg'} alt={user.name} className="w-32 h-32 rounded-2xl border-4 border-[#0A0A0F] shadow-xl object-cover" />
           <div className="text-center sm:text-left sm:pb-2">
             <h1 className="text-2xl md:text-3xl font-bold text-white" style={{ fontFamily: 'Syne, sans-serif' }}>{user.name}</h1>
             <p className="text-[#6B7280] text-sm">{user.email}</p>
-            <p className="text-[#6B7280] text-xs mt-1">Member since {user.joinedDate}</p>
+            <p className="text-[#6B7280] text-xs mt-1">Member since {new Date(user.createdAt).toLocaleDateString('en-IN')}</p>
           </div>
         </div>
 
@@ -46,8 +59,8 @@ function Profile() {
             <button
               key={tab}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${tab === activeTab
-                  ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white'
-                  : 'text-[#6B7280] hover:text-white'
+                ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white'
+                : 'text-[#6B7280] hover:text-white'
                 }`}
             >
               {tab}
@@ -65,8 +78,8 @@ function Profile() {
               </div>
               <div className="flex items-center gap-3">
                 <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${order.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                    order.status === 'cancelled' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                      'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                  order.status === 'cancelled' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                    'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
                   }`}>
                   {order.status}
                 </span>

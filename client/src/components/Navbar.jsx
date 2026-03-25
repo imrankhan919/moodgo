@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { logoutUser } from '../features/auth/authSlice'
 
 function Navbar() {
 
   const dispatch = useDispatch()
-
+  const navigate = useNavigate()
 
   const { user } = useSelector(state => state.auth)
 
@@ -16,6 +16,7 @@ function Navbar() {
 
   const handleLogout = () => {
     dispatch(logoutUser())
+    navigate("/login")
   }
 
 
@@ -58,13 +59,16 @@ function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             {
               user ? (
-                <button
-                  onClick={handleLogout}
-                  className="px-5 cursor-pointer py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-full hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105"
-                  style={{ fontFamily: 'DM Sans, sans-serif' }}
-                >
-                  Logout
-                </button>
+                <>
+                  <Link className={`relative text-sm font-medium transition-all duration-300 text-white mx-6 hover:text-white'}`} to={"/profile"}>{user.name}</Link>
+                  <button
+                    onClick={handleLogout}
+                    className="px-5 cursor-pointer py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-full hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105"
+                    style={{ fontFamily: 'DM Sans, sans-serif' }}
+                  >
+                    Logout
+                  </button>
+                </>
               ) : (<>
                 <Link
                   to="/login"
