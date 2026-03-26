@@ -17,6 +17,11 @@ function Profile() {
     if (!user) {
       navigate("/login")
     }
+
+    if (user.isAdmin) {
+      navigate("/admin")
+    }
+
   }, [user])
 
 

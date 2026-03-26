@@ -1,7 +1,23 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import AdminSidebar from '../../components/AdminSidebar'
+import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
 
 function AdminLayout() {
+
+  const { user } = useSelector(state => state.auth)
+
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!user?.isAdmin) {
+      navigate("/auth/profile")
+    }
+  }, [user])
+
+
+
   return (
     <div className="min-h-screen bg-[#0A0A0F]" style={{ fontFamily: 'DM Sans, sans-serif' }}>
       {/* Mobile Header */}

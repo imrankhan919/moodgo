@@ -34,33 +34,22 @@ function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {[
-              { path: '/', label: 'Home' },
-              { path: '/events', label: 'Events' },
-              { path: '/my-tickets', label: 'My Tickets' }
-            ].map(link => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`relative text-sm font-medium transition-all duration-300 ${isActive(link.path) ? 'text-white' : 'text-[#6B7280] hover:text-white'}`}
-                style={{ fontFamily: 'DM Sans, sans-serif' }}
-              >
-                {link.label}
-                {isActive(link.path) && (
-                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-full" />
-                )}
-              </Link>
-            ))}
-          </div>
+
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center gap-3">
             {
               user ? (
                 <>
-                  <Link className={`relative text-sm font-medium transition-all duration-300 text-white mx-6 hover:text-white'}`} to={"/profile"}>{user.name}</Link>
+                  <Link
+                    to="/events"
+                    className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-full hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105"
+                    style={{ fontFamily: 'DM Sans, sans-serif' }}
+                  >
+                    Browse Events
+                  </Link>
+                  <Link className={`relative text-sm font-medium transition-all duration-300 text-white mx-6 hover:text-white'}`} to={"/auth/my-tickets"}>My Tickets</Link>
+                  <Link className={`relative text-sm font-medium transition-all duration-300 text-white mx-6 hover:text-white'}`} to={user.isAdmin ? "/admin" : "/auth/profile"}>Welcome {user.name.toUpperCase()}</Link>
                   <button
                     onClick={handleLogout}
                     className="px-5 cursor-pointer py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-full hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105"
@@ -78,14 +67,15 @@ function Navbar() {
                   Login
                 </Link>
                 <Link
-                  to="/register"
+                  to="/events"
                   className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-full hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105"
                   style={{ fontFamily: 'DM Sans, sans-serif' }}
                 >
-                  Get Started
+                  Browse Events
                 </Link>
               </>)
             }
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -97,30 +87,27 @@ function Navbar() {
             </summary>
             <div className="absolute right-0 top-full mt-2 w-64 bg-[#111118] border border-[#1F1F2E] rounded-2xl shadow-2xl overflow-hidden animate-[slideUp_0.3s_ease_forwards]">
               <div className="p-4 space-y-2">
-                {[
-                  { path: '/', label: 'Home' },
-                  { path: '/events', label: 'Events' },
-                  { path: '/my-tickets', label: 'My Tickets' }
-                ].map(link => (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${isActive(link.path) ? 'bg-gradient-to-r from-[#4F8EF7]/10 to-[#8B5CF6]/10 text-white' : 'text-[#6B7280] hover:text-white hover:bg-[#1F1F2E]'}`}
-                    style={{ fontFamily: 'DM Sans, sans-serif' }}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
                 <div className="pt-2 border-t border-[#1F1F2E] space-y-2">
                   {
                     user ? (
-                      <button
-                        onClick={handleLogout}
-                        className="block px-4 py-3 text-center text-sm font-medium text-white bg-red-500 hover:bg-red-600 cursor-pointer rounded-xl transition-all duration-300"
-                        style={{ fontFamily: 'DM Sans, sans-serif' }}
-                      >
-                        Get Started
-                      </button>
+                      <>
+                        <Link className={`block w-full my-4  text-sm font-medium transition-all duration-300 text-white mx-6 hover:text-white'}`} to={"/auth/my-tickets"}>My Tickets</Link>
+                        <Link className={`block w-full my-4 text-sm font-medium transition-all duration-300 text-white mx-6 hover:text-white'}`} to={"/auth/profile"}>Welcome {user.name}</Link>
+                        <Link
+                          to="/events"
+                          className="block px-4 py-3 text-center text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl transition-all duration-300"
+                          style={{ fontFamily: 'DM Sans, sans-serif' }}
+                        >
+                          Browse Events
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full block px-4 py-3 text-center text-sm font-medium text-white bg-red-500 hover:bg-red-600 cursor-pointer rounded-xl transition-all duration-300"
+                          style={{ fontFamily: 'DM Sans, sans-serif' }}
+                        >
+                          Logout
+                        </button>
+                      </>
                     ) : (
                       <>
                         <Link
@@ -131,11 +118,11 @@ function Navbar() {
                           Login
                         </Link>
                         <Link
-                          to="/register"
+                          to="/events"
                           className="block px-4 py-3 text-center text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl transition-all duration-300"
                           style={{ fontFamily: 'DM Sans, sans-serif' }}
                         >
-                          Get Started
+                          Browse Events
                         </Link>
                       </>
                     )

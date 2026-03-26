@@ -18,6 +18,7 @@ import AdminOrders from './pages/admin/AdminOrders'
 import AdminRatings from './pages/admin/AdminRatings'
 import AdminCoupons from './pages/admin/AdminCoupons'
 import { ToastContainer } from 'react-toastify'
+import PrivateComponent from './components/PrivateComponent'
 
 function App() {
   const location = useLocation()
@@ -69,9 +70,15 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
-        <Route path="/book/:eventId" element={<BookTicket />} />
-        <Route path="/my-tickets" element={<MyTickets />} />
-        <Route path="/profile" element={<Profile />} />
+
+        {/* Auth Routes */}
+
+        <Route path='/auth' element={<PrivateComponent />}>
+          <Route path="book/:eventId" element={<BookTicket />} />
+          <Route path="my-tickets" element={<MyTickets />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminLayout />}>

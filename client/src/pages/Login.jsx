@@ -32,7 +32,7 @@ function Login() {
   useEffect(() => {
 
     if (user) {
-      navigate("/profile")
+      navigate("/auth/profile")
     }
 
     if (isError && message) {
