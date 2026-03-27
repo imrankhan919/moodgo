@@ -92,7 +92,7 @@ const getAllRatings = (req, res) => {
 
 
 const getAllOrders = async (req, res) => {
-    const orders = await Order.find()
+    const orders = await Order.find().populate('user').populate('event')
 
     if (!orders) {
         res.status(404)

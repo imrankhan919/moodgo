@@ -1,6 +1,39 @@
-import { orders } from '../../data/mockData'
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { getAllOrders } from "../../features/admin/adminSlice"
+import { toast } from "react-toastify"
+import LoadingScreen from "../../components/LoadingScreen"
 
 function AdminOrders() {
+
+  const { orders, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
+
+  const dispatch = useDispatch()
+
+
+
+  useEffect(() => {
+
+    if (!adminError) {
+      // Fetch Users
+      dispatch(getAllOrders())
+    }
+
+
+    if (adminError, adminErrorMessage) {
+      toast.error(adminErrorMessage, { position: "top-center", theme: "dark" })
+    }
+
+
+  }, [adminError, adminErrorMessage])
+
+
+  if (adminLoading) {
+    return <LoadingScreen />
+  }
+
+
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
@@ -24,22 +57,21 @@ function AdminOrders() {
             </thead>
             <tbody>
               {orders.map(order => (
-                <tr key={order.id} className="border-b border-[#1F1F2E] last:border-0 hover:bg-[#1F1F2E]/30 transition-all duration-300">
-                  <td className="px-6 py-4 text-white text-sm font-mono">{order.id}</td>
-                  <td className="px-6 py-4 text-white text-sm">{order.userName}</td>
-                  <td className="px-6 py-4 text-[#6B7280] text-sm truncate max-w-[180px]">{order.eventTitle}</td>
-                  <td className="px-6 py-4 text-white text-sm text-center">{order.tickets}</td>
-                  <td className="px-6 py-4 text-white text-sm font-medium">${order.totalAmount}</td>
+                <tr key={order._id} className="border-b border-[#1F1F2E] last:border-0 hover:bg-[#1F1F2E]/30 transition-all duration-300">
+                  <td className="px-6 py-4 text-white text-sm font-mono">{order._id}</td>
+                  <td className="px-6 py-4 text-white text-sm">{order.user.name}</td>
+                  <td className="px-6 py-4 text-[#6B7280] text-sm truncate max-w-[180px]">{order.event.title}</td>
+                  <td className="px-6 py-4 text-white text-sm text-center">{order.totalSeats}</td>
+                  <td className="px-6 py-4 text-white text-sm font-medium">${order.billedAmount}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${
-                      order.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                    <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${order.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                       order.status === 'cancelled' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                      'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-                    }`}>
+                        'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                      }`}>
                       {order.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[#6B7280] text-sm">{order.bookedAt}</td>
+                  <td className="px-6 py-4 text-[#6B7280] text-sm">{new Date(order.createdAt).toLocaleDateString('en-IN')}</td>
                   <td className="px-6 py-4">
                     {/* Actions Dropdown */}
                     <details className="relative">
@@ -60,11 +92,10 @@ function AdminOrders() {
                           ].map(status => (
                             <button
                               key={status.value}
-                              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                                order.status === status.value
-                                  ? 'bg-[#4F8EF7]/10 text-white'
-                                  : 'text-[#6B7280] hover:text-white hover:bg-[#1F1F2E]'
-                              }`}
+                              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-300 ${order.status === status.value
+                                ? 'bg-[#4F8EF7]/10 text-white'
+                                : 'text-[#6B7280] hover:text-white hover:bg-[#1F1F2E]'
+                                }`}
                             >
                               <span className="text-sm">{status.icon}</span>
                               <span className={order.status === status.value ? status.color : ''}>{status.label}</span>

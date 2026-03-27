@@ -1,6 +1,41 @@
-import { users } from '../../data/mockData'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllUsers } from '../../features/admin/adminSlice'
+import { toast } from 'react-toastify'
+import LoadingScreen from '../../components/LoadingScreen'
+
 
 function AdminUsers() {
+
+  const { users, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+
+    if (!adminError) {
+      // Fetch Users
+      dispatch(getAllUsers())
+    }
+
+
+    if (adminError, adminErrorMessage) {
+      toast.error(adminErrorMessage, { position: "top-center", theme: "dark" })
+    }
+
+
+  }, [adminError, adminErrorMessage])
+
+
+  if (adminLoading) {
+    return <LoadingScreen />
+  }
+
+
+
+
+
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
@@ -23,36 +58,36 @@ function AdminUsers() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#1F1F2E]">
-                {['User', 'Email', 'Role', 'Status', 'Joined', 'Actions'].map(h => (
+                {['User', 'Email', 'Phone', 'Status', 'Joined', 'Actions'].map(h => (
                   <th key={h} className="px-6 py-3 text-left text-[#6B7280] text-xs uppercase tracking-wider font-medium">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {users.map(user => (
-                <tr key={user.id} className="border-b border-[#1F1F2E] last:border-0 hover:bg-[#1F1F2E]/30 transition-all duration-300">
+                <tr key={user._id} className="border-b border-[#1F1F2E] last:border-0 hover:bg-[#1F1F2E]/30 transition-all duration-300">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full border-2 border-[#1F1F2E]" />
+                      <div className="w-8 h-8 p-1 rounded-full bg-gray-800 border border-white text-white text-center flex itemse-center justify-center font-bold">
+                        <p>{user.name[0].toUpperCase()}</p>
+                      </div>
                       <span className="text-white text-sm font-medium">{user.name}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-[#6B7280] text-sm">{user.email}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${
-                      user.role === 'admin' ? 'bg-[#8B5CF6]/10 text-[#8B5CF6] border border-[#8B5CF6]/20' : 'bg-[#4F8EF7]/10 text-[#4F8EF7] border border-[#4F8EF7]/20'
-                    }`}>
-                      {user.role}
+                    <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-tight 'bg-[#4F8EF7]/10 text-[#4F8EF7] border border-[#4F8EF7]/20'
+                      }`}>
+                      {user.phone}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${
-                      user.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                    }`}>
-                      {user.status}
+                    <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${user.isActive ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                      }`}>
+                      {user.isActive ? "Active" : "Blocked"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[#6B7280] text-sm">{user.joinedDate}</td>
+                  <td className="px-6 py-4 text-[#6B7280] text-sm">{new Date(user.createdAt).toLocaleDateString('en-IN')}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       {/* Edit User Modal */}
@@ -147,11 +182,10 @@ function AdminUsers() {
                               <summary className="list-none cursor-pointer flex-1 py-2.5 text-center border border-[#1F1F2E] text-[#6B7280] text-sm rounded-xl hover:text-white hover:border-[#6B7280] transition-all duration-300">
                                 Cancel
                               </summary>
-                              <button className={`flex-1 py-2.5 text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105 ${
-                                user.status === 'active'
-                                  ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20'
-                                  : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
-                              }`}>
+                              <button className={`flex-1 py-2.5 text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105 ${user.status === 'active'
+                                ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20'
+                                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
+                                }`}>
                                 {user.status === 'active' ? 'Suspend' : 'Reactivate'}
                               </button>
                             </div>

@@ -1,7 +1,38 @@
+import { toast } from 'react-toastify'
+import LoadingScreen from '../../components/LoadingScreen'
 import { ratings, comments } from '../../data/mockData'
+import { getAllRatings } from '../../features/admin/adminSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
 function AdminRatings() {
-  const maxDistribution = Math.max(...Object.values(ratings.distribution))
+
+  //  const { ratings, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
+
+  //   const dispatch = useDispatch()
+
+  //   const maxDistribution = Math.max(...Object.values(ratings.distribution))
+
+
+  //   useEffect(() => {
+
+  //     if (!adminError) {
+  //       // Fetch Users
+  //       dispatch(getAllRatings())
+  //     }
+
+
+  //     if (adminError, adminErrorMessage) {
+  //       toast.error(adminErrorMessage, { position: "top-center", theme: "dark" })
+  //     }
+
+
+  //   }, [adminError, adminErrorMessage])
+
+
+  //   if (adminLoading) {
+  //     return <LoadingScreen />
+  //   }
+
 
   return (
     <div>

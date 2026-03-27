@@ -1,4 +1,8 @@
-import { events } from '../../data/mockData'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllEvents } from '../../features/admin/adminSlice'
+import { useEffect } from 'react'
+import { toast } from 'react-toastify'
+import LoadingScreen from '../../components/LoadingScreen'
 
 function EventFormModal({ event, isEdit }) {
   const title = isEdit ? 'Edit Event' : 'Create New Event'
@@ -101,6 +105,35 @@ function EventFormModal({ event, isEdit }) {
 }
 
 function AdminEvents() {
+
+  const { events, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
+
+  const dispatch = useDispatch()
+
+
+
+  useEffect(() => {
+
+    if (!adminError) {
+      // Fetch Users
+      dispatch(getAllEvents())
+    }
+
+
+    if (adminError, adminErrorMessage) {
+      toast.error(adminErrorMessage, { position: "top-center", theme: "dark" })
+    }
+
+
+  }, [adminError, adminErrorMessage])
+
+
+  if (adminLoading) {
+    return <LoadingScreen />
+  }
+
+
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
@@ -123,33 +156,30 @@ function AdminEvents() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#1F1F2E]">
-                {['Event', 'Category', 'Date', 'Price', 'Tickets Left', 'Actions'].map(h => (
+                {['Event', 'Duration', 'Date', 'Price', 'Tickets Left', 'Actions'].map(h => (
                   <th key={h} className="px-6 py-3 text-left text-[#6B7280] text-xs uppercase tracking-wider font-medium">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {events.map(event => (
-                <tr key={event.id} className="border-b border-[#1F1F2E] last:border-0 hover:bg-[#1F1F2E]/30 transition-all duration-300">
+              {events?.map(event => (
+                <tr key={event._id} className="border-b border-[#1F1F2E] last:border-0 hover:bg-[#1F1F2E]/30 transition-all duration-300">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <img src={event.image} alt={event.title} className="w-12 h-9 rounded-lg object-cover border border-[#1F1F2E]" />
+                      <img src={event.eventImage} alt={event.title} className="w-12 h-9 rounded-lg object-cover border border-[#1F1F2E]" />
                       <span className="text-white text-sm font-medium truncate max-w-[200px]">{event.title}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <span className="px-2.5 py-0.5 text-[10px] font-semibold text-[#4F8EF7] bg-[#4F8EF7]/10 border border-[#4F8EF7]/20 rounded-full uppercase tracking-wider">
-                      {event.category}
+                      {event.duration}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[#6B7280] text-sm">{event.date}</td>
-                  <td className="px-6 py-4 text-white text-sm font-medium">${event.price}</td>
+                  <td className="px-6 py-4 text-[#6B7280] text-sm">{event.eventDate}</td>
+                  <td className="px-6 py-4 text-white text-sm font-medium">₹{event.ticketPrice}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-[#1F1F2E] rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-full" style={{ width: `${(event.availableTickets / event.totalTickets) * 100}%` }} />
-                      </div>
-                      <span className="text-[#6B7280] text-xs">{event.availableTickets}/{event.totalTickets}</span>
+                      <span className="text-[#6B7280] text-xs">{event.totalSeats}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
