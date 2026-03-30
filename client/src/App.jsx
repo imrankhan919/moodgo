@@ -69,7 +69,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
-        <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/events/:eid" element={<EventDetail />} />
 
         {/* Auth Routes */}
 

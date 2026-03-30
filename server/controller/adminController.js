@@ -2,7 +2,7 @@ import Coupon from "../models/couponModel.js"
 import Event from "../models/eventModel.js"
 import Order from "../models/orderModel.js"
 import User from "../models/userModel.js"
-
+import Comment from "../models/commentModel.js"
 
 
 
@@ -86,8 +86,17 @@ const updateEvent = async (req, res) => {
 
 
 
-const getAllRatings = (req, res) => {
-    res.send("All Ratings!")
+const getAllComments = async (req, res) => {
+    const comments = await Comment.find().populate('user')
+
+    if (!comments) {
+        res.status(404)
+        throw new Error("No Comments Found!")
+    }
+
+
+    res.status(200).json(comments)
+
 }
 
 
@@ -165,6 +174,6 @@ const updateCoupon = async (req, res) => {
 
 
 
-const adminController = { getAllUsers, updateUser, getAllEvents, getAllRatings, getAllOrders, getAllCoupons, updateEvent, createCoupon, updateCoupon }
+const adminController = { getAllUsers, updateUser, getAllEvents, getAllComments, getAllOrders, getAllCoupons, updateEvent, createCoupon, updateCoupon }
 
 export default adminController

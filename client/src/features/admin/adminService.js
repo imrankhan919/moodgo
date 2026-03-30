@@ -56,7 +56,7 @@ const fetchAllRatings = async (token) => {
 
 
 
-    const response = await axios.get(API_URL + "/ratings", options)
+    const response = await axios.get(API_URL + "/comments", options)
     return response.data
 }
 

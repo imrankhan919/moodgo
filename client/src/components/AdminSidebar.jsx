@@ -1,6 +1,13 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { logoutUser } from '../features/auth/authSlice'
 
 function AdminSidebar() {
+
+  const { user } = useSelector(state => state.auth)
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const location = useLocation()
 
   const links = [
@@ -11,6 +18,14 @@ function AdminSidebar() {
     { path: '/admin/ratings', label: 'Ratings', icon: '⭐' },
     { path: '/admin/coupons', label: 'Coupons', icon: '🎟️' }
   ]
+
+
+  const handleLogout = () => {
+    dispatch(logoutUser())
+    navigate("/")
+  }
+
+
 
   const isActive = (path) => {
     if (path === '/admin') return location.pathname === '/admin'
@@ -38,11 +53,10 @@ function AdminSidebar() {
           <Link
             key={link.path}
             to={link.path}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
-              isActive(link.path)
-                ? 'bg-gradient-to-r from-[#4F8EF7]/10 to-[#8B5CF6]/10 text-white border-l-2 border-[#4F8EF7]'
-                : 'text-[#6B7280] hover:text-white hover:bg-[#1F1F2E]'
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${isActive(link.path)
+              ? 'bg-gradient-to-r from-[#4F8EF7]/10 to-[#8B5CF6]/10 text-white border-l-2 border-[#4F8EF7]'
+              : 'text-[#6B7280] hover:text-white hover:bg-[#1F1F2E]'
+              }`}
             style={{ fontFamily: 'DM Sans, sans-serif' }}
           >
             <span className="text-base">{link.icon}</span>
@@ -54,14 +68,16 @@ function AdminSidebar() {
       {/* Bottom User */}
       <div className="px-4 py-4 border-t border-[#1F1F2E]">
         <div className="flex items-center gap-3 px-2">
-          <img src="https://i.pravatar.cc/150?img=1" alt="Admin" className="w-9 h-9 rounded-full border-2 border-[#4F8EF7]/30" />
+          <div className="w-8 h-8 p-1 rounded-full bg-gray-800 border border-white text-white text-center flex itemse-center justify-center font-bold">
+            <p>{user.name[0].toUpperCase()}</p>
+          </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white text-sm font-medium truncate" style={{ fontFamily: 'DM Sans, sans-serif' }}>Alex Morgan</p>
+            <p className="text-white text-sm font-medium truncate" style={{ fontFamily: 'DM Sans, sans-serif' }}>{user?.name}</p>
             <p className="text-[#6B7280] text-[10px]" style={{ fontFamily: 'DM Sans, sans-serif' }}>Admin</p>
           </div>
-          <Link to="/" className="text-[#6B7280] hover:text-red-400 transition-all duration-300" title="Logout">
+          <button onClick={handleLogout} className="text-[#6B7280] hover:text-red-400 transition-all duration-300" title="Logout">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-          </Link>
+          </button>
         </div>
       </div>
     </aside>

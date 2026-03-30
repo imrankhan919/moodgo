@@ -9,7 +9,7 @@ const router = express.Router()
 
 router.post("/", protect.forUser, upload.single('eventImage'), eventController.createEvent)
 router.get("/", eventController.getEvents)
-router.get("/:eid", protect.forUser, eventController.getEvent)
+router.get("/:eid", eventController.getEvent)
 
 
 

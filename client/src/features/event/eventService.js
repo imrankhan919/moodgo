@@ -7,7 +7,18 @@ const fetchEvents = async () => {
     return response.data
 }
 
+const fetchEvent = async (eid) => {
+    const response = await axios.get(API_URL + `/${eid}`)
+    return response.data
+}
 
-const eventService = { fetchEvents }
+const fetchEventComments = async (eid) => {
+    const response = await axios.get(`/api/comment/${eid}`)
+    return response.data
+}
+
+
+
+const eventService = { fetchEvents, fetchEvent, fetchEventComments }
 
 export default eventService

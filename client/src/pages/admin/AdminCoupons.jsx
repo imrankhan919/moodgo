@@ -1,6 +1,42 @@
-import { coupons } from '../../data/mockData'
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { getAllCoupons } from "../../features/admin/adminSlice"
+import { toast } from "react-toastify"
+import LoadingScreen from "../../components/LoadingScreen"
+
 
 function AdminCoupons() {
+
+  const { coupons, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
+
+  const dispatch = useDispatch()
+
+
+
+  useEffect(() => {
+
+    if (!adminError) {
+      // Fetch Ratings
+      dispatch(getAllCoupons())
+    }
+
+
+    if (adminError, adminErrorMessage) {
+      toast.error(adminErrorMessage, { position: "top-center", theme: "dark" })
+    }
+
+
+  }, [adminError, adminErrorMessage])
+
+
+  if (adminLoading) {
+    return <LoadingScreen />
+  }
+
+
+
+
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
@@ -46,29 +82,20 @@ function AdminCoupons() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#1F1F2E]">
-                {['Code', 'Discount', 'Usage', 'Expires', 'Status', 'Actions'].map(h => (
+                {['Code', 'Discount', 'Status', 'createdAt'].map(h => (
                   <th key={h} className="px-6 py-3 text-left text-[#6B7280] text-xs uppercase tracking-wider font-medium">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {coupons.map(coupon => (
-                <tr key={coupon.id} className="border-b border-[#1F1F2E] last:border-0 hover:bg-[#1F1F2E]/30 transition-all duration-300">
+                <tr key={coupon._id} className="border-b border-[#1F1F2E] last:border-0 hover:bg-[#1F1F2E]/30 transition-all duration-300">
                   <td className="px-6 py-4">
-                    <span className="text-white text-sm font-mono font-bold bg-[#0A0A0F] px-3 py-1 rounded-lg border border-[#1F1F2E]">{coupon.code}</span>
+                    <span className="text-white text-sm font-mono font-bold bg-[#0A0A0F] px-3 py-1 rounded-lg border border-[#1F1F2E]">{coupon.couponCode}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-[#4F8EF7] text-sm font-bold">{coupon.discount}%</span>
+                    <span className="text-[#4F8EF7] text-sm font-bold">{coupon.couponDiscount}%</span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-[#1F1F2E] rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-full" style={{ width: `${(coupon.usedCount / coupon.maxUses) * 100}%` }} />
-                      </div>
-                      <span className="text-[#6B7280] text-xs">{coupon.usedCount}/{coupon.maxUses}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-[#6B7280] text-sm">{coupon.expiresAt}</td>
                   <td className="px-6 py-4">
                     {/* Toggle Switch */}
                     <div className={`relative w-11 h-6 rounded-full cursor-pointer transition-all duration-300 ${coupon.isActive ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6]' : 'bg-[#1F1F2E]'}`}>
@@ -76,56 +103,7 @@ function AdminCoupons() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    {/* Actions Dropdown */}
-                    <details className="relative">
-                      <summary className="list-none cursor-pointer p-2 rounded-lg hover:bg-[#1F1F2E] text-[#6B7280] hover:text-white transition-all duration-300" title="Actions">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
-                      </summary>
-                      <div className="absolute right-0 top-full mt-1 w-56 bg-[#111118] border border-[#1F1F2E] rounded-xl shadow-2xl z-40 animate-[slideUp_0.2s_ease_forwards] overflow-hidden">
-                        {/* Dropdown Header */}
-                        <div className="px-4 py-2.5 border-b border-[#1F1F2E]">
-                          <p className="text-white text-xs font-medium font-mono">{coupon.code}</p>
-                          <p className="text-[#6B7280] text-[10px]">{coupon.discount}% off · {coupon.usedCount} used</p>
-                        </div>
-                        {/* Edit Fields Inline */}
-                        <div className="p-3 space-y-3 border-b border-[#1F1F2E]">
-                          <div>
-                            <label className="block text-[#6B7280] text-[9px] uppercase tracking-wider mb-1">Discount %</label>
-                            <input type="number" defaultValue={coupon.discount} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-[#4F8EF7] transition-all duration-300" />
-                          </div>
-                          <div>
-                            <label className="block text-[#6B7280] text-[9px] uppercase tracking-wider mb-1">Max Uses</label>
-                            <input type="number" defaultValue={coupon.maxUses} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-[#4F8EF7] transition-all duration-300" />
-                          </div>
-                          <div>
-                            <label className="block text-[#6B7280] text-[9px] uppercase tracking-wider mb-1">Expires</label>
-                            <input type="date" defaultValue={coupon.expiresAt} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-[#4F8EF7] transition-all duration-300" />
-                          </div>
-                          <button className="w-full py-2 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-xs font-medium rounded-lg hover:scale-105 transition-all duration-300">
-                            Update Coupon
-                          </button>
-                        </div>
-                        {/* Actions */}
-                        <div className="p-1.5">
-                          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#6B7280] hover:text-white hover:bg-[#1F1F2E] transition-all duration-300">
-                            <span>📋</span>
-                            <span>Copy Code</span>
-                          </button>
-                          <button className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                            coupon.isActive
-                              ? 'text-yellow-400/70 hover:text-yellow-400 hover:bg-yellow-500/5'
-                              : 'text-emerald-400/70 hover:text-emerald-400 hover:bg-emerald-500/5'
-                          }`}>
-                            <span>{coupon.isActive ? '⏸️' : '▶️'}</span>
-                            <span>{coupon.isActive ? 'Deactivate' : 'Activate'}</span>
-                          </button>
-                          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400/70 hover:text-red-400 hover:bg-red-500/5 transition-all duration-300">
-                            <span>🗑️</span>
-                            <span>Delete Coupon</span>
-                          </button>
-                        </div>
-                      </div>
-                    </details>
+                    <span className="text-[#4F8EF7] text-sm font-bold">{new Date(coupon.createdAt).toLocaleDateString('en-IN')}</span>
                   </td>
                 </tr>
               ))}
