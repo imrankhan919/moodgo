@@ -11,6 +11,7 @@ import eventRoutes from "./routes/eventRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js"
 import commentRoutes from "./routes/commentRoutes.js"
 import giveAnswer from "./controller/chatController.js"
+import couponRoutes from "./routes/couponRoutes.js"
 import protect from "./middleware/authMiddleware.js"
 
 
@@ -52,6 +53,9 @@ app.use("/api/events", eventRoutes)
 
 // Ticket Booking Routes
 app.use("/api/order", orderRoutes)
+
+// Coupon Routes
+app.use("/api/coupon", couponRoutes)
 
 // Comment Routes
 app.use("/api/comment", commentRoutes)

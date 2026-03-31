@@ -25,7 +25,15 @@ const bookTicket = (formData, token) => { }
 const cancelTicket = (tid, token) => { }
 
 
-const orderService = { fetchTickets, fetchTicket, bookTicket, cancelTicket }
+const checkCoupon = async (couponCode) => {
+
+
+    const response = await axios.post("/api/coupon/apply", couponCode)
+    return response.data
+}
+
+
+const orderService = { fetchTickets, fetchTicket, bookTicket, cancelTicket, checkCoupon }
 
 
 export default orderService

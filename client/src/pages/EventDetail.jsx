@@ -2,16 +2,31 @@ import { useParams, Link } from 'react-router-dom'
 import { events, comments } from '../data/mockData'
 import { useDispatch, useSelector } from 'react-redux'
 import LoadingScreen from '../components/LoadingScreen'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getEvent, getEventComments } from '../features/event/eventSlice'
 import { toast } from 'react-toastify'
+import { applyCoupon } from '../features/orders/orderSlice'
 
 function EventDetail() {
   const { eid } = useParams()
+  const { user } = useSelector(state => state.auth)
   const { event, eventComments, eventLoading, eventSuccess, eventError, eventErrorMessage } = useSelector(state => state.event)
+  const { coupon, orderLoading, orderSuccess, orderError, orderErrorMessage } = useSelector(state => state.order)
+
+  const [ticketCount, setTicketCount] = useState(1)
+  const [couponCode, setCouponCode] = useState("")
 
 
   const dispatch = useDispatch()
+
+
+
+  const handleApplyCoupon = (e) => {
+    e.preventDefault()
+    dispatch(applyCoupon({ couponCode }))
+  }
+
+
 
   useEffect(() => {
 
@@ -21,16 +36,16 @@ function EventDetail() {
       dispatch(getEventComments(eid))
     }
 
-    if (eventError && eventErrorMessage) {
+    if (eventError && eventErrorMessage || orderError && orderErrorMessage) {
       toast.error(eventErrorMessage, { position: "top-center", theme: "dark" })
     }
 
 
-  }, [eventError, eventErrorMessage])
+  }, [eventError, eventErrorMessage, orderError, orderErrorMessage])
 
 
 
-  if (eventLoading) {
+  if (eventLoading || orderLoading) {
     return <LoadingScreen text='Event Loading...' />
   }
 
@@ -140,37 +155,52 @@ function EventDetail() {
               <div className="flex items-center justify-between bg-[#0A0A0F] rounded-xl p-4 mb-4 border border-[#1F1F2E]">
                 <span className="text-white text-sm">Tickets</span>
                 <div className="flex items-center gap-3">
-                  <button className="w-8 h-8 rounded-lg bg-[#1F1F2E] text-white flex items-center justify-center hover:bg-[#4F8EF7]/20 transition-all duration-300">−</button>
-                  <span className="text-white font-bold w-8 text-center">2</span>
-                  <button className="w-8 h-8 rounded-lg bg-[#1F1F2E] text-white flex items-center justify-center hover:bg-[#4F8EF7]/20 transition-all duration-300">+</button>
+                  <button onClick={() => setTicketCount(ticketCount === 1 ? 1 : ticketCount - 1)} className="w-8 h-8 rounded-lg bg-[#1F1F2E] text-white flex items-center justify-center hover:bg-[#4F8EF7]/20 transition-all duration-300">−</button>
+                  <span className="text-white font-bold w-8 text-center">{ticketCount}</span>
+                  <button onClick={() => setTicketCount(ticketCount === 5 ? 5 : ticketCount + 1)} className="w-8 h-8 rounded-lg bg-[#1F1F2E] text-white flex items-center justify-center hover:bg-[#4F8EF7]/20 transition-all duration-300">+</button>
                 </div>
               </div>
 
               {/* Coupon */}
               <div className="flex items-center gap-2 mb-6">
-                <input
-                  type="text"
-                  placeholder="Coupon code"
-                  className="flex-1 bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7]/50 transition-all duration-300"
-                  readOnly
-                />
-                <button className="px-4 py-2.5 text-sm text-[#4F8EF7] border border-[#4F8EF7]/30 rounded-xl hover:bg-[#4F8EF7]/10 transition-all duration-300">
-                  Apply
-                </button>
+                <form onSubmit={handleApplyCoupon}>
+                  <input
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    type="text"
+                    placeholder="Coupon code"
+                    className={coupon?.isActive ? "flex-1 bg-green-900 border border-green-600 mr-2 rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7]/50 transition-all duration-300" : "flex-1 bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7]/50 transition-all duration-300"}
+                  />
+                  <button type='submit' disabled={couponCode === ""} className="px-4 py-2.5 text-sm text-[#4F8EF7] border border-[#4F8EF7]/30 rounded-xl hover:bg-[#4F8EF7]/10 transition-all duration-300 disabled:hidden">
+                    Apply
+                  </button>
+                </form>
               </div>
 
               {/* Total */}
               <div className="flex items-center justify-between py-4 border-t border-[#1F1F2E] mb-6">
-                <span className="text-[#6B7280] text-sm">Total (2 tickets)</span>
-                <span className="text-white text-xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>${event.price * 2}</span>
+                <span className="text-[#6B7280] text-sm">Total ({ticketCount} tickets)</span>
+                <span className="text-white text-xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>₹{event.ticketPrice * ticketCount}</span>
               </div>
 
-              <Link
-                to={`/book/${event.id}`}
-                className="block w-full py-4 text-center text-white font-semibold bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl hover:shadow-[0_0_30px_rgba(79,142,247,0.4)] transition-all duration-300 hover:scale-105"
-              >
-                Book Ticket
-              </Link>
+              {
+                !user ? (
+                  <Link
+                    to={`/login`}
+                    className="block w-full py-4 text-center text-white font-semibold bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl hover:shadow-[0_0_30px_rgba(79,142,247,0.4)] transition-all duration-300 hover:scale-105"
+                  >
+                    Login To Book Ticket
+                  </Link>
+                ) : (
+                  <Link
+                    to={`/book/${event.id}`}
+                    className="block w-full py-4 text-center text-white font-semibold bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl hover:shadow-[0_0_30px_rgba(79,142,247,0.4)] transition-all duration-300 hover:scale-105"
+                  >
+                    Book Ticket
+                  </Link>
+                )
+              }
+
             </div>
           </div>
         </div>

@@ -178,11 +178,32 @@ const cancelTicket = async (req, res) => {
 
 }
 
+
+const applyCoupon = async (req, res) => {
+
+    const { couponCode } = req.body
+
+    console.log(req.body)
+
+    let couponExists = await Coupon.findOne({ couponCode })
+
+    if (!couponExists) {
+        res.status(401)
+        throw new Error("Invalid Coupon")
+    }
+
+    res.status(200).json(couponExists)
+
+}
+
+
+
 const orderController = {
     bookTicket,
     cancelTicket,
     getTickets,
-    getTicket
+    getTicket,
+    applyCoupon
 }
 
 export default orderController
