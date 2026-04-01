@@ -1,24 +1,24 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { events, comments } from '../data/mockData'
 import { useDispatch, useSelector } from 'react-redux'
 import LoadingScreen from '../components/LoadingScreen'
 import { useEffect, useState } from 'react'
 import { getEvent, getEventComments } from '../features/event/eventSlice'
 import { toast } from 'react-toastify'
-import { applyCoupon } from '../features/orders/orderSlice'
+import { applyCoupon, ticketBook } from '../features/orders/orderSlice'
 
 function EventDetail() {
   const { eid } = useParams()
   const { user } = useSelector(state => state.auth)
   const { event, eventComments, eventLoading, eventSuccess, eventError, eventErrorMessage } = useSelector(state => state.event)
-  const { coupon, orderLoading, orderSuccess, orderError, orderErrorMessage } = useSelector(state => state.order)
+  const { coupon, order, orderLoading, orderSuccess, orderError, orderErrorMessage } = useSelector(state => state.order)
 
   const [ticketCount, setTicketCount] = useState(1)
   const [couponCode, setCouponCode] = useState("")
 
 
   const dispatch = useDispatch()
-
+  const navigate = useNavigate()
 
 
   const handleApplyCoupon = (e) => {
@@ -27,8 +27,28 @@ function EventDetail() {
   }
 
 
+  const handleTicketBooking = () => {
+
+    dispatch(ticketBook({
+      eventId: eid,
+      numberOfSeats: ticketCount,
+      couponCode: couponCode || null
+    }))
+
+
+
+  }
+
+
+
 
   useEffect(() => {
+
+
+    if (orderSuccess && order) {
+      navigate("/auth/book/" + eid)
+    }
+
 
     if (!eventError && !eventErrorMessage) {
       // Fetch Event
@@ -37,7 +57,7 @@ function EventDetail() {
     }
 
     if (eventError && eventErrorMessage || orderError && orderErrorMessage) {
-      toast.error(eventErrorMessage, { position: "top-center", theme: "dark" })
+      toast.error(eventErrorMessage || orderErrorMessage, { position: "top-center", theme: "dark" })
     }
 
 
@@ -174,13 +194,16 @@ function EventDetail() {
                   <button type='submit' disabled={couponCode === ""} className="px-4 py-2.5 text-sm text-[#4F8EF7] border border-[#4F8EF7]/30 rounded-xl hover:bg-[#4F8EF7]/10 transition-all duration-300 disabled:hidden">
                     Apply
                   </button>
+                  {
+                    coupon.isActive && <p className='text-green-500 text-xs my-4 ml-2 '>Coupon Applied</p>
+                  }
                 </form>
               </div>
 
               {/* Total */}
               <div className="flex items-center justify-between py-4 border-t border-[#1F1F2E] mb-6">
                 <span className="text-[#6B7280] text-sm">Total ({ticketCount} tickets)</span>
-                <span className="text-white text-xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>₹{event.ticketPrice * ticketCount}</span>
+                <span className="text-white text-xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>₹ {coupon?.isActive ? event.ticketPrice * ticketCount - event.ticketPrice * ticketCount * coupon?.couponDiscount / 100 : event.ticketPrice * ticketCount}</span>
               </div>
 
               {
@@ -192,12 +215,12 @@ function EventDetail() {
                     Login To Book Ticket
                   </Link>
                 ) : (
-                  <Link
-                    to={`/book/${event.id}`}
+                  <button
+                    onClick={handleTicketBooking}
                     className="block w-full py-4 text-center text-white font-semibold bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl hover:shadow-[0_0_30px_rgba(79,142,247,0.4)] transition-all duration-300 hover:scale-105"
                   >
                     Book Ticket
-                  </Link>
+                  </button>
                 )
               }
 

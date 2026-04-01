@@ -1,9 +1,42 @@
 import { useParams, Link } from 'react-router-dom'
 import { events } from '../data/mockData'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import LoadingScreen from '../components/LoadingScreen'
+import { getEvent } from '../features/event/eventSlice'
+import { toast } from 'react-toastify'
 
 function BookTicket() {
-  const { eventId } = useParams()
-  const event = events.find(e => e.id === Number(eventId)) || events[0]
+
+  const { order } = useSelector(state => state.order)
+  const { event, eventComments, eventLoading, eventSuccess, eventError, eventErrorMessage } = useSelector(state => state.event)
+
+  const { eid } = useParams()
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+
+
+
+
+
+    if (!eventError && !eventErrorMessage) {
+      // Fetch Event
+      dispatch(getEvent(eid))
+    }
+
+    if (eventError && eventErrorMessage) {
+      toast.error(eventErrorMessage, { position: "top-center", theme: "dark" })
+    }
+
+
+  }, [eventError, eventErrorMessage])
+
+  if (eventLoading) {
+    return <LoadingScreen text='Event Loading...' />
+  }
+
 
   return (
     <div className="min-h-screen bg-[#0A0A0F] pt-24 pb-20" style={{ fontFamily: 'DM Sans, sans-serif' }}>
@@ -17,9 +50,8 @@ function BookTicket() {
           ].map((item, i) => (
             <div key={i} className="flex items-center">
               <div className="flex flex-col items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                  item.step <= 3 ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white' : 'bg-[#1F1F2E] text-[#6B7280]'
-                }`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${item.step <= 3 ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white' : 'bg-[#1F1F2E] text-[#6B7280]'
+                  }`}>
                   {item.step < 3 ? '✓' : item.step === 3 ? '✓' : item.step}
                 </div>
                 <span className={`text-xs mt-2 ${item.step <= 3 ? 'text-white' : 'text-[#6B7280]'}`}>{item.label}</span>
@@ -79,7 +111,7 @@ function BookTicket() {
               {[
                 { label: 'Tickets', value: '2' },
                 { label: 'Price per ticket', value: `$${event.price}` },
-                { label: 'Total Amount', value: `$${event.price * 2}`, highlight: true }
+                { label: 'Total Amount', value: `${order.billedAmount}`, highlight: true }
               ].map((row, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <span className="text-[#6B7280] text-sm">{row.label}</span>

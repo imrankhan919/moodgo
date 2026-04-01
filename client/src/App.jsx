@@ -74,7 +74,7 @@ function App() {
         {/* Auth Routes */}
 
         <Route path='/auth' element={<PrivateComponent />}>
-          <Route path="book/:eventId" element={<BookTicket />} />
+          <Route path="book/:eid" element={<BookTicket />} />
           <Route path="my-tickets" element={<MyTickets />} />
           <Route path="profile" element={<Profile />} />
         </Route>

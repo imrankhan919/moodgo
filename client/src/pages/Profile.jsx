@@ -47,7 +47,7 @@ function Profile() {
         {/* Stats Row */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           {[
-            { label: 'Total Bookings', value: user.totalBookings },
+            { label: 'Available Credits', value: user.credits },
             { label: 'Events Attended', value: 12 },
             { label: 'Reviews Written', value: 7 }
           ].map((stat, i) => (

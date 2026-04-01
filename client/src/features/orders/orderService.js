@@ -19,7 +19,21 @@ const fetchTickets = async (token) => {
 const fetchTicket = (tid, token) => { }
 
 
-const bookTicket = (formData, token) => { }
+const bookTicket = async (formData, token) => {
+
+    let options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+
+
+    const response = await axios.post("/api/order/" + formData.eventId, formData, options)
+    console.log(response.data)
+    return response.data
+
+
+}
 
 
 const cancelTicket = (tid, token) => { }

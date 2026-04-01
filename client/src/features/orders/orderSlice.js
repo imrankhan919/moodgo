@@ -51,6 +51,23 @@ const orderSlice = createSlice({
                 state.orderError = true
                 state.orderErrorMessage = action.payload
             })
+            .addCase(ticketBook.pending, (state, action) => {
+                state.orderLoading = true
+                state.orderSuccess = false
+                state.orderError = false
+            })
+            .addCase(ticketBook.fulfilled, (state, action) => {
+                state.orderLoading = false
+                state.orderSuccess = true
+                state.order = action.payload
+                state.orderError = false
+            })
+            .addCase(ticketBook.rejected, (state, action) => {
+                state.orderLoading = false
+                state.orderSuccess = false
+                state.orderError = true
+                state.orderErrorMessage = action.payload
+            })
     }
 });
 
@@ -81,3 +98,17 @@ export const applyCoupon = createAsyncThunk("APPLY/COUPON", async (couponCode, t
         return thunkAPI.rejectWithValue(message)
     }
 })
+
+
+// Book Ticket
+export const ticketBook = createAsyncThunk("BOOK/TICKET", async (formData, thunkAPI) => {
+
+    let token = thunkAPI.getState().auth.user.token
+
+    try {
+        return await orderService.bookTicket(formData, token)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+}) 
