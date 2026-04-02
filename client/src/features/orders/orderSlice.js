@@ -68,6 +68,23 @@ const orderSlice = createSlice({
                 state.orderError = true
                 state.orderErrorMessage = action.payload
             })
+            .addCase(ticketCancel.pending, (state, action) => {
+                state.orderLoading = true
+                state.orderSuccess = false
+                state.orderError = false
+            })
+            .addCase(ticketCancel.fulfilled, (state, action) => {
+                state.orderLoading = false
+                state.orderSuccess = true
+                state.orders = [action.payload]
+                state.orderError = false
+            })
+            .addCase(ticketCancel.rejected, (state, action) => {
+                state.orderLoading = false
+                state.orderSuccess = false
+                state.orderError = true
+                state.orderErrorMessage = action.payload
+            })
     }
 });
 
@@ -107,6 +124,19 @@ export const ticketBook = createAsyncThunk("BOOK/TICKET", async (formData, thunk
 
     try {
         return await orderService.bookTicket(formData, token)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Cancel Ticket
+export const ticketCancel = createAsyncThunk("CANCEL/TICKET", async (tid, thunkAPI) => {
+
+    let token = thunkAPI.getState().auth.user.token
+
+    try {
+        return await orderService.cancelTicket(tid, token)
     } catch (error) {
         let message = error.response.data.message
         return thunkAPI.rejectWithValue(message)

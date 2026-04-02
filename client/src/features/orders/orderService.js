@@ -29,14 +29,24 @@ const bookTicket = async (formData, token) => {
 
 
     const response = await axios.post("/api/order/" + formData.eventId, formData, options)
-    console.log(response.data)
     return response.data
 
 
 }
 
 
-const cancelTicket = (tid, token) => { }
+const cancelTicket = async (tid, token) => {
+
+    let options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.put("/api/order/" + tid, {}, options)
+    console.log(response.data)
+    return response.data
+}
 
 
 const checkCoupon = async (couponCode) => {

@@ -18,7 +18,6 @@ const fetchEventComments = async (eid) => {
 }
 
 
-
 const eventService = { fetchEvents, fetchEvent, fetchEventComments }
 
 export default eventService

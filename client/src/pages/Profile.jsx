@@ -1,19 +1,37 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { orders } from '../data/mockData'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { getTickets, ticketCancel } from '../features/orders/orderSlice'
 
 function Profile() {
 
   const { user } = useSelector(state => state.auth)
+  const { orders, orderLoading, orderSuccess, orderError, orderErrorMessage } = useSelector(state => state.order)
 
+  const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const userOrders = orders.slice(0, 4)
+
   const tabs = ['My Bookings', 'Saved Events', 'Settings']
   const activeTab = 'My Bookings'
 
+
+  // Cancel Ticket
+  const handleCancelTicket = (tid) => {
+    if (window.confirm("Are You Sure?")) {
+      dispatch(ticketCancel(tid))
+    }
+  }
+
+
   useEffect(() => {
+
+    if (!orderError) {
+      dispatch(getTickets())
+    }
+
+
     if (!user) {
       navigate("/login")
     }
@@ -75,11 +93,14 @@ function Profile() {
 
         {/* My Bookings Content */}
         <div className="space-y-4">
-          {userOrders.map(order => (
-            <div key={order.id} className="bg-[#111118] rounded-xl border border-[#1F1F2E] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-[#4F8EF7]/30 transition-all duration-300">
+          {orders.map(order => (
+            <div key={order._id} className="bg-[#111118] rounded-xl border border-[#1F1F2E] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-[#4F8EF7]/30 transition-all duration-300">
               <div>
-                <h3 className="text-white font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>{order.eventTitle}</h3>
-                <p className="text-[#6B7280] text-sm">{order.bookedAt} · {order.tickets} ticket(s)</p>
+                <h3 className="text-white font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>{order.event.title}</h3>
+                <p className="text-[#6B7280] text-sm">{new Date(order.createdAt).toLocaleDateString('en-IN')} · {order.seats} ticket(s)</p>
+                {
+                  order.status === "confirmed" && <button onClick={() => handleCancelTicket(order._id)} className='my-4 bg-red-500 hover:bg-red-600 p-2 rounded-xl text-white text-xs cursor-pointer font-semibold'>Cancel Ticket</button>
+                }
               </div>
               <div className="flex items-center gap-3">
                 <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full uppercase tracking-wider ${order.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
@@ -88,8 +109,10 @@ function Profile() {
                   }`}>
                   {order.status}
                 </span>
-                <span className="text-[#4F8EF7] font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>${order.totalAmount}</span>
+                <span className="text-[#4F8EF7] font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>{order.billedAmount}</span>
               </div>
+
+
             </div>
           ))}
         </div>
