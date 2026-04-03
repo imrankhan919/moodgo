@@ -75,9 +75,23 @@ const fetchAllCoupons = async (token) => {
 
 }
 
+const createCoupon = async (formData, token) => {
+
+    let options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+
+
+    const response = await axios.post(API_URL + "/coupons", formData, options)
+    return response.data
+
+}
+
 
 const adminService = {
-    fetchAllUsers, fetchAllEvents, fetchAllOrders, fetchAllRatings, fetchAllCoupons
+    fetchAllUsers, fetchAllEvents, fetchAllOrders, fetchAllRatings, fetchAllCoupons, createCoupon
 }
 
 

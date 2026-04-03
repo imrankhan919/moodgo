@@ -1,17 +1,45 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getAllCoupons } from "../../features/admin/adminSlice"
+import { addCoupon, getAllCoupons } from "../../features/admin/adminSlice"
 import { toast } from "react-toastify"
 import LoadingScreen from "../../components/LoadingScreen"
 
 
 function AdminCoupons() {
 
+  const [formData, setFormData] = useState({
+    couponCode: "",
+    couponDiscount: ""
+  })
+  const [showModal, setShowModal] = useState(false)
+
+
+  const { couponCode, couponDiscount } = formData
+
   const { coupons, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
 
   const dispatch = useDispatch()
 
+  const handleShowModal = () => {
+    setShowModal(showModal ? false : true)
+  }
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    dispatch(addCoupon(formData))
+
+    setFormData({ couponCode: "", couponDiscount: "" })
+    handleShowModal()
+
+
+  }
 
   useEffect(() => {
 
@@ -44,37 +72,35 @@ function AdminCoupons() {
           <h1 className="text-2xl md:text-3xl font-bold text-white" style={{ fontFamily: 'Syne, sans-serif' }}>Coupons</h1>
           <p className="text-[#6B7280] text-sm mt-1">Manage discount coupons</p>
         </div>
-        <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105">
+        <button onClick={handleShowModal} className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105">
           ➕ Create Coupon
         </button>
       </div>
 
       {/* Inline Create Form (preview) */}
-      <div className="bg-[#111118] rounded-2xl border border-[#4F8EF7]/30 p-5 mb-6 animate-[slideUp_0.3s_ease_forwards]">
-        <h3 className="text-white text-sm font-bold mb-4" style={{ fontFamily: 'Syne, sans-serif' }}>New Coupon</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-[#6B7280] text-[10px] uppercase tracking-wider mb-1">Code</label>
-            <input type="text" placeholder="SAVE25" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2.5 text-white text-sm font-mono outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" readOnly />
-          </div>
-          <div>
-            <label className="block text-[#6B7280] text-[10px] uppercase tracking-wider mb-1">Discount %</label>
-            <input type="number" placeholder="25" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" readOnly />
-          </div>
-          <div>
-            <label className="block text-[#6B7280] text-[10px] uppercase tracking-wider mb-1">Max Uses</label>
-            <input type="number" placeholder="100" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" readOnly />
-          </div>
-          <div>
-            <label className="block text-[#6B7280] text-[10px] uppercase tracking-wider mb-1">Expires</label>
-            <input type="date" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" readOnly />
-          </div>
-        </div>
-        <div className="flex gap-2 mt-4">
-          <button className="px-4 py-2 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-300">Save Coupon</button>
-          <button className="px-4 py-2 border border-[#1F1F2E] text-[#6B7280] text-sm rounded-lg hover:text-white transition-all duration-300">Cancel</button>
-        </div>
-      </div>
+      {
+        showModal && (
+          <form onSubmit={handleSubmit}>
+            <div className="bg-[#111118] rounded-2xl border border-[#4F8EF7]/30 p-5 mb-6 animate-[slideUp_0.3s_ease_forwards]">
+              <h3 className="text-white text-sm font-bold mb-4" style={{ fontFamily: 'Syne, sans-serif' }}>New Coupon</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-[#6B7280] text-[10px] uppercase tracking-wider mb-1">Code</label>
+                  <input name="couponCode" value={couponCode} onChange={handleChange} type="text" placeholder="SAVE25" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2.5 text-white text-sm font-mono outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" />
+                </div>
+                <div>
+                  <label className="block text-[#6B7280] text-[10px] uppercase tracking-wider mb-1">Discount %</label>
+                  <input value={couponDiscount} name="couponDiscount" onChange={handleChange} type="number" placeholder="25" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-lg px-3 py-2.5 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" />
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <button type="submit" className="px-4 py-2 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-300">Save Coupon</button>
+                <button onClick={handleShowModal} className="px-4 py-2 border border-[#1F1F2E] text-[#6B7280] text-sm rounded-lg hover:text-white transition-all duration-300">Cancel</button>
+              </div>
+            </div>
+          </form>
+        )
+      }
 
       {/* Table */}
       <div className="bg-[#111118] rounded-2xl border border-[#1F1F2E] overflow-hidden">
