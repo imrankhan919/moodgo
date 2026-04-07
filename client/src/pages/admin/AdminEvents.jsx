@@ -3,106 +3,9 @@ import { getAllEvents } from '../../features/admin/adminSlice'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import LoadingScreen from '../../components/LoadingScreen'
+import { EventFormModal } from '../../components/EventModal'
+import { useState } from 'react'
 
-function EventFormModal({ event, isEdit }) {
-  const title = isEdit ? 'Edit Event' : 'Create New Event'
-  const submitLabel = isEdit ? 'Save Changes' : 'Create Event'
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeInUp_0.2s_ease_forwards]">
-      <div className="bg-[#111118] border border-[#1F1F2E] rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1F1F2E]">
-          <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Syne, sans-serif' }}>{title}</h3>
-          <summary className="list-none cursor-pointer p-1.5 rounded-lg hover:bg-[#1F1F2E] text-[#6B7280] hover:text-white transition-all duration-300">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-          </summary>
-        </div>
-        {/* Modal Body */}
-        <div className="p-6 space-y-4">
-          {/* Image Upload */}
-          <div>
-            <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Event Image</label>
-            {isEdit && event?.image && (
-              <div className="mb-3 relative rounded-xl overflow-hidden border border-[#1F1F2E]">
-                <img src={event.image} alt="Current" className="w-full h-32 object-cover" />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-300">
-                  <span className="text-white text-xs font-medium bg-[#0A0A0F]/80 px-3 py-1.5 rounded-lg backdrop-blur-sm">Click below to replace</span>
-                </div>
-              </div>
-            )}
-            <label className="flex flex-col items-center justify-center w-full h-28 bg-[#0A0A0F] border-2 border-dashed border-[#1F1F2E] rounded-xl cursor-pointer hover:border-[#4F8EF7]/50 hover:bg-[#4F8EF7]/5 transition-all duration-300 group">
-              <div className="flex flex-col items-center justify-center">
-                <svg className="w-8 h-8 text-[#6B7280] group-hover:text-[#4F8EF7] transition-all duration-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-[#6B7280] text-xs group-hover:text-[#4F8EF7] transition-all duration-300">
-                  <span className="font-semibold">Click to upload</span> or drag and drop
-                </p>
-                <p className="text-[#6B7280]/50 text-[10px] mt-1">PNG, JPG, WebP up to 5MB</p>
-              </div>
-              <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" />
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Event Title</label>
-            <input type="text" defaultValue={isEdit ? event?.title : ''} placeholder="Enter event title" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Category</label>
-              <select defaultValue={isEdit ? event?.category : 'Music'} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#4F8EF7] transition-all duration-300 cursor-pointer">
-                {['Music', 'Tech', 'Art', 'Food', 'Sports'].map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Price ($)</label>
-              <input type="number" defaultValue={isEdit ? event?.price : ''} placeholder="0" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Date</label>
-              <input type="date" defaultValue={isEdit ? event?.date : ''} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#4F8EF7] transition-all duration-300" />
-            </div>
-            <div>
-              <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Time</label>
-              <input type="time" defaultValue={isEdit ? event?.time : ''} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#4F8EF7] transition-all duration-300" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Location</label>
-              <input type="text" defaultValue={isEdit ? event?.location : ''} placeholder="Venue name" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" />
-            </div>
-            <div>
-              <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">City</label>
-              <input type="text" defaultValue={isEdit ? event?.city : ''} placeholder="City" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Total Tickets</label>
-            <input type="number" defaultValue={isEdit ? event?.totalTickets : ''} placeholder="0" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" />
-          </div>
-          <div>
-            <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Description</label>
-            <textarea defaultValue={isEdit ? event?.description : ''} placeholder="Describe the event..." rows={3} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300 resize-none" />
-          </div>
-        </div>
-        {/* Modal Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#1F1F2E]">
-          <summary className="list-none cursor-pointer px-5 py-2.5 border border-[#1F1F2E] text-[#6B7280] text-sm rounded-xl hover:text-white hover:border-[#6B7280] transition-all duration-300">
-            Cancel
-          </summary>
-          <button className="px-5 py-2.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] hover:scale-105 transition-all duration-300">
-            {submitLabel}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 function AdminEvents() {
 
@@ -110,7 +13,11 @@ function AdminEvents() {
 
   const dispatch = useDispatch()
 
+  const [showModal, setShowModal] = useState(false)
 
+  const handleShowModal = () => {
+    setShowModal(showModal ? false : true)
+  }
 
   useEffect(() => {
 
@@ -142,12 +49,11 @@ function AdminEvents() {
           <p className="text-[#6B7280] text-sm mt-1">Manage all events on the platform</p>
         </div>
         {/* Create Event - opens modal */}
-        <details className="relative">
-          <summary className="list-none cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105">
-            ➕ Create Event
-          </summary>
-          <EventFormModal isEdit={false} />
-        </details>
+
+        <button onClick={handleShowModal} className="list-none cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] transition-all duration-300 hover:scale-105">
+          ➕ Create Event
+        </button>
+        <EventFormModal isEdit={false} showModal={showModal} handleShowModal={handleShowModal} />
       </div>
 
       {/* Table */}
