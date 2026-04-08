@@ -1,6 +1,14 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { addEventAdmin, updateEventAdmin } from "../features/admin/adminSlice"
+import { useEffectEvent } from "react"
 
 export function EventFormModal({ event, isEdit, showModal, handleShowModal }) {
+
+    const dispatch = useDispatch()
+
+    const { user } = useSelector(state => state.auth)
+    const { edit } = useSelector(state => state.admin)
 
     const submitLabel = isEdit ? 'Save Changes' : 'Create Event'
 
@@ -13,10 +21,12 @@ export function EventFormModal({ event, isEdit, showModal, handleShowModal }) {
         eventArtistName: "",
         ticketPrice: "",
         totalSeats: "",
-        duration: ""
+        duration: "",
+        isActive: true,
+        status: ""
     })
 
-    const { title, description, eventImage, eventDate, eventLocation, eventArtistName, ticketPrice, totalSeats, duration } = formData
+    const { title, description, eventImage, eventDate, eventLocation, eventArtistName, ticketPrice, totalSeats, duration, isActive, status } = formData
 
 
 
@@ -47,12 +57,22 @@ export function EventFormModal({ event, isEdit, showModal, handleShowModal }) {
         formDataToSend.append('ticketPrice', ticketPrice)
         formDataToSend.append('totalSeats', totalSeats)
         formDataToSend.append('duration', duration)
+        formDataToSend.append('eventImage', eventImage)
+        formDataToSend.append('isActive', isActive)
+        formDataToSend.append('status', status)
 
 
-        console.log(formData)
+        !edit.isEdit ? dispatch(addEventAdmin(formDataToSend)) : dispatch(updateEventAdmin(formData))
+
+        handleShowModal()
+
+
     }
 
 
+    useEffect(() => {
+        setFormData(edit.event)
+    }, [edit])
 
 
 
@@ -62,7 +82,7 @@ export function EventFormModal({ event, isEdit, showModal, handleShowModal }) {
                 {/* Modal Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-[#1F1F2E]">
                     <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Syne, sans-serif' }}>{title}</h3>
-                    <button onClick={handleShowModal} className="list-none cursor-pointer p-1.5 rounded-lg hover:bg-[#1F1F2E] text-[#6B7280] hover:text-white transition-all duration-300">
+                    <button type="button" onClick={handleShowModal} className="list-none cursor-pointer p-1.5 rounded-lg hover:bg-[#1F1F2E] text-[#6B7280] hover:text-white transition-all duration-300">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
@@ -79,7 +99,7 @@ export function EventFormModal({ event, isEdit, showModal, handleShowModal }) {
                                     <span className="font-semibold">Click to upload</span> or drag and drop
                                 </p>
                                 <p className="text-[#6B7280]/50 text-[10px] mt-1">PNG, JPG, WebP up to 5MB</p>
-                                <p className={eventImage.name ? "text-green-500 text-[10px] mt-2" : "text-[#6B7280]/50 text-[10px] mt-2"}>{eventImage.name || "No Image Selected"}</p>
+                                <p className={eventImage?.name ? "text-green-500 text-[10px] mt-2" : "text-[#6B7280]/50 text-[10px] mt-2"}>{eventImage?.name || "No Image Selected"}</p>
                             </div>
                             <input onChange={handleChange} name="eventImage" type="file" accept="image/png,image/jpeg,image/webp" className="hidden" />
                         </label>
@@ -119,6 +139,24 @@ export function EventFormModal({ event, isEdit, showModal, handleShowModal }) {
                             <input type="number" value={ticketPrice} onChange={handleChange} name="ticketPrice" placeholder="0" className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300" />
                         </div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">isActive</label>
+                            <select name="isActive" value={isActive} onChange={handleChange} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300">
+                                <option value="true">Active</option>
+                                <option value="false">InActive</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Ticket Price</label>
+                            <select name="status" value={status} onChange={handleChange} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300">
+                                <option value="upcoming">upcoming</option>
+                                <option value="ongoing">ongoing</option>
+                                <option value="cancelled">cancelled</option>
+                                <option value="expired">expired</option>
+                            </select>
+                        </div>
+                    </div>
                     <div>
                         <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Description</label>
                         <textarea value={description} onChange={handleChange} name="description" placeholder="Describe the event..." rows={3} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none placeholder-[#6B7280] focus:border-[#4F8EF7] transition-all duration-300 resize-none" />
@@ -126,11 +164,11 @@ export function EventFormModal({ event, isEdit, showModal, handleShowModal }) {
                 </div>
                 {/* Modal Footer */}
                 <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#1F1F2E]">
-                    <button onClick={handleShowModal} className="list-none cursor-pointer px-5 py-2.5 border border-[#1F1F2E] text-[#6B7280] text-sm rounded-xl hover:text-white hover:border-[#6B7280] transition-all duration-300">
+                    <button type="button" onClick={handleShowModal} className="list-none cursor-pointer px-5 py-2.5 border border-[#1F1F2E] text-[#6B7280] text-sm rounded-xl hover:text-white hover:border-[#6B7280] transition-all duration-300">
                         Cancel
                     </button>
                     <button type="submit" className="px-5 py-2.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] hover:scale-105 transition-all duration-300">
-                        {submitLabel}
+                        {edit?.isEdit ? "Update Event" : "Create Event"}
                     </button>
                 </div>
             </form>

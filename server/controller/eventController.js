@@ -12,6 +12,9 @@ const createEvent = async (req, res) => {
         throw new Error("Please Enter All Details!")
     }
 
+
+
+
     // Upload Image To Cloudinary 
     const uploadResult = await uploadToCloudinary(req.file.path)
 

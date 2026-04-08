@@ -55,9 +55,6 @@ function EventCard({ event }) {
             ₹{event.ticketPrice}
           </span>
         </div>
-        <button className="w-full mt-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] hover:scale-105" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-          Book Now
-        </button>
       </div>
     </Link>
   )

@@ -90,8 +90,35 @@ const createCoupon = async (formData, token) => {
 }
 
 
+const createEvent = async (formData, token) => {
+    let options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.post("/api/events", formData, options)
+    return response.data
+
+}
+
+
+const updateEvent = async (formData, token) => {
+    let options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.put("/api/admin/events/" + formData._id, formData, options)
+    return response.data
+}
+
+
+
+
 const adminService = {
-    fetchAllUsers, fetchAllEvents, fetchAllOrders, fetchAllRatings, fetchAllCoupons, createCoupon
+    fetchAllUsers, fetchAllEvents, fetchAllOrders, fetchAllRatings, fetchAllCoupons, createCoupon, createEvent, updateEvent
 }
 
 

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllEvents } from '../../features/admin/adminSlice'
+import { editEvent, getAllEvents } from '../../features/admin/adminSlice'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import LoadingScreen from '../../components/LoadingScreen'
@@ -18,6 +18,12 @@ function AdminEvents() {
   const handleShowModal = () => {
     setShowModal(showModal ? false : true)
   }
+
+  const handleEditEvent = (event) => {
+    handleShowModal()
+    dispatch(editEvent(event))
+  }
+
 
   useEffect(() => {
 
@@ -91,27 +97,11 @@ function AdminEvents() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       {/* Edit Event Modal Trigger */}
-                      <details className="relative">
-                        <summary className="list-none cursor-pointer p-2 rounded-lg hover:bg-[#4F8EF7]/10 text-[#6B7280] hover:text-[#4F8EF7] transition-all duration-300" title="Edit">
+                      <button onClick={() => handleEditEvent(event)} className="relative">
+                        <div className="list-none cursor-pointer p-2 rounded-lg hover:bg-[#4F8EF7]/10 text-[#6B7280] hover:text-[#4F8EF7] transition-all duration-300" title="Edit">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        </summary>
-                        <EventFormModal event={event} isEdit={true} />
-                      </details>
-
-                      {/* Delete Dropdown */}
-                      <details className="relative">
-                        <summary className="list-none cursor-pointer p-2 rounded-lg hover:bg-red-500/10 text-[#6B7280] hover:text-red-400 transition-all duration-300" title="Delete">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                        </summary>
-                        <div className="absolute right-0 top-full mt-1 w-56 bg-[#111118] border border-[#1F1F2E] rounded-xl shadow-2xl z-40 animate-[slideUp_0.2s_ease_forwards] p-4">
-                          <p className="text-white text-sm font-medium mb-1" style={{ fontFamily: 'Syne, sans-serif' }}>Delete event?</p>
-                          <p className="text-[#6B7280] text-xs mb-3">This action cannot be undone.</p>
-                          <div className="flex gap-2">
-                            <button className="flex-1 px-3 py-2 bg-red-500/10 text-red-400 text-xs font-medium rounded-lg border border-red-500/20 hover:bg-red-500/20 transition-all duration-300">Delete</button>
-                            <summary className="list-none cursor-pointer flex-1 px-3 py-2 text-center border border-[#1F1F2E] text-[#6B7280] text-xs rounded-lg hover:text-white transition-all duration-300">Cancel</summary>
-                          </div>
                         </div>
-                      </details>
+                      </button>
                     </div>
                   </td>
                 </tr>

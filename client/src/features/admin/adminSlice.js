@@ -7,6 +7,7 @@ const initialState = {
     orders: [],
     ratings: [],
     coupons: [],
+    edit: { event: {}, isEdit: false },
     adminLoading: false,
     adminSuccess: false,
     adminError: false,
@@ -16,7 +17,14 @@ const initialState = {
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
-    reducers: {},
+    reducers: {
+        editEvent: (state, action) => {
+            return {
+                ...state,
+                edit: { event: action.payload, isEdit: true }
+            }
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAllUsers.pending, (state, action) => {
@@ -121,10 +129,45 @@ const adminSlice = createSlice({
                 state.adminError = true
                 state.adminErrorMessage = action.payload
             })
+            .addCase(addEventAdmin.pending, (state, action) => {
+                state.adminLoading = true
+                state.adminSuccess = false
+                state.adminError = false
+            })
+            .addCase(addEventAdmin.fulfilled, (state, action) => {
+                state.adminLoading = false
+                state.adminSuccess = true
+                state.events = [action.payload, ...state.events]
+                state.adminError = false
+            })
+            .addCase(addEventAdmin.rejected, (state, action) => {
+                state.adminLoading = false
+                state.adminSuccess = false
+                state.adminError = true
+                state.adminErrorMessage = action.payload
+            })
+            .addCase(updateEventAdmin.pending, (state, action) => {
+                state.adminLoading = true
+                state.adminSuccess = false
+                state.adminError = false
+            })
+            .addCase(updateEventAdmin.fulfilled, (state, action) => {
+                state.adminLoading = false
+                state.adminSuccess = true
+                state.events = state.events.map(event => event._id === action.payload._id ? action.payload : event)
+                state.edit = { event: {}, isEdit: false }
+                state.adminError = false
+            })
+            .addCase(updateEventAdmin.rejected, (state, action) => {
+                state.adminLoading = false
+                state.adminSuccess = false
+                state.adminError = true
+                state.adminErrorMessage = action.payload
+            })
     }
 });
 
-export const { } = adminSlice.actions
+export const { editEvent } = adminSlice.actions
 
 export default adminSlice.reducer
 
@@ -186,6 +229,27 @@ export const addCoupon = createAsyncThunk("ADD/ADMIN/COUPON", async (formData, t
     let token = thunkAPI.getState().auth.user.token
     try {
         return await adminService.createCoupon(formData, token)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const addEventAdmin = createAsyncThunk("ADD/ADMIN/EVENT", async (formData, thunkAPI) => {
+    let token = thunkAPI.getState().auth.user.token
+    try {
+        return await adminService.createEvent(formData, token)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+
+export const updateEventAdmin = createAsyncThunk("UPDATE/ADMIN/EVENT", async (formData, thunkAPI) => {
+    let token = thunkAPI.getState().auth.user.token
+    try {
+        return await adminService.updateEvent(formData, token)
     } catch (error) {
         let message = error.response.data.message
         return thunkAPI.rejectWithValue(message)
