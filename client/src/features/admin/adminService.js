@@ -115,10 +115,23 @@ const updateEvent = async (formData, token) => {
 }
 
 
+const updateUser = async (update, token) => {
+    let options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.put("/api/admin/users/" + update.uid, update, options)
+    return response.data
+
+
+}
+
 
 
 const adminService = {
-    fetchAllUsers, fetchAllEvents, fetchAllOrders, fetchAllRatings, fetchAllCoupons, createCoupon, createEvent, updateEvent
+    fetchAllUsers, fetchAllEvents, fetchAllOrders, fetchAllRatings, fetchAllCoupons, createCoupon, createEvent, updateEvent, updateUser
 }
 
 

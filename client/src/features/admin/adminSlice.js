@@ -164,6 +164,23 @@ const adminSlice = createSlice({
                 state.adminError = true
                 state.adminErrorMessage = action.payload
             })
+            .addCase(userUpdate.pending, (state, action) => {
+                state.adminLoading = true
+                state.adminSuccess = false
+                state.adminError = false
+            })
+            .addCase(userUpdate.fulfilled, (state, action) => {
+                state.adminLoading = false
+                state.adminSuccess = true
+                state.users = state.users.map(user => user._id === action.payload._id ? action.payload : user)
+                state.adminError = false
+            })
+            .addCase(userUpdate.rejected, (state, action) => {
+                state.adminLoading = false
+                state.adminSuccess = false
+                state.adminError = true
+                state.adminErrorMessage = action.payload
+            })
     }
 });
 
@@ -250,6 +267,17 @@ export const updateEventAdmin = createAsyncThunk("UPDATE/ADMIN/EVENT", async (fo
     let token = thunkAPI.getState().auth.user.token
     try {
         return await adminService.updateEvent(formData, token)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+
+export const userUpdate = createAsyncThunk("ADMIN/UPDATE/USER", async (update, thunkAPI) => {
+    let token = thunkAPI.getState().auth.user.token
+    try {
+        return await adminService.updateUser(update, token)
     } catch (error) {
         let message = error.response.data.message
         return thunkAPI.rejectWithValue(message)

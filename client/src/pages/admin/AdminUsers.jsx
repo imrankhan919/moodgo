@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllUsers } from '../../features/admin/adminSlice'
+import { getAllUsers, userUpdate } from '../../features/admin/adminSlice'
 import { toast } from 'react-toastify'
 import LoadingScreen from '../../components/LoadingScreen'
 
@@ -10,6 +10,12 @@ function AdminUsers() {
   const { users, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
 
   const dispatch = useDispatch()
+
+  const handleBanUnbanUser = (update) => {
+    dispatch(userUpdate(update))
+  }
+
+
 
   useEffect(() => {
 
@@ -44,12 +50,6 @@ function AdminUsers() {
           <p className="text-[#6B7280] text-sm mt-1">Manage all registered users</p>
         </div>
         <span className="text-[#6B7280] text-sm">{users.length} users total</span>
-      </div>
-
-      {/* Search */}
-      <div className="flex items-center gap-3 bg-[#111118] border border-[#1F1F2E] rounded-xl px-4 py-3 mb-6 max-w-md focus-within:border-[#4F8EF7]/50 transition-all duration-300">
-        <svg className="w-4 h-4 text-[#6B7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-        <input type="text" placeholder="Search users..." className="bg-transparent text-white text-sm outline-none placeholder-[#6B7280] flex-1" readOnly />
       </div>
 
       {/* Table */}
@@ -143,55 +143,14 @@ function AdminUsers() {
                         </div>
                       </details>
 
-                      {/* Suspend/Disable User Modal */}
-                      <details className="relative">
-                        <summary className="list-none cursor-pointer p-2 rounded-lg hover:bg-red-500/10 text-[#6B7280] hover:text-red-400 transition-all duration-300" title={user.status === 'active' ? 'Suspend User' : 'Reactivate User'}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                        </summary>
-                        {/* Confirmation Modal */}
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeInUp_0.2s_ease_forwards]">
-                          <div className="bg-[#111118] border border-[#1F1F2E] rounded-2xl shadow-2xl w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
-                            <div className="p-6 text-center">
-                              {/* Icon */}
-                              <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${user.status === 'active' ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
-                                {user.status === 'active' ? (
-                                  <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                                ) : (
-                                  <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                )}
-                              </div>
-                              <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>
-                                {user.status === 'active' ? 'Suspend User?' : 'Reactivate User?'}
-                              </h3>
-                              <p className="text-[#6B7280] text-sm mb-2">
-                                {user.status === 'active'
-                                  ? `Are you sure you want to suspend ${user.name}? They will lose access to event bookings.`
-                                  : `Reactivate ${user.name}'s account? They will regain full platform access.`
-                                }
-                              </p>
-                              {/* User Preview */}
-                              <div className="flex items-center gap-3 bg-[#0A0A0F] rounded-xl p-3 my-4 border border-[#1F1F2E]">
-                                <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border-2 border-[#1F1F2E]" />
-                                <div className="text-left">
-                                  <p className="text-white text-sm font-medium">{user.name}</p>
-                                  <p className="text-[#6B7280] text-xs">{user.email}</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-3 px-6 py-4 border-t border-[#1F1F2E]">
-                              <summary className="list-none cursor-pointer flex-1 py-2.5 text-center border border-[#1F1F2E] text-[#6B7280] text-sm rounded-xl hover:text-white hover:border-[#6B7280] transition-all duration-300">
-                                Cancel
-                              </summary>
-                              <button className={`flex-1 py-2.5 text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105 ${user.status === 'active'
-                                ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20'
-                                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
-                                }`}>
-                                {user.status === 'active' ? 'Suspend' : 'Reactivate'}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </details>
+
+                      <div className={`w-5 h-5 mx-auto mb-4 rounded-full flex items-center justify-center ${user.status === 'active' ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
+                        {user.isActive ? (
+                          <svg onClick={() => handleBanUnbanUser({ uid: user._id, isActive: false })} className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                        ) : (
+                          <svg onClick={() => handleBanUnbanUser({ uid: user._id, isActive: true })} className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        )}
+                      </div>
                     </div>
                   </td>
                 </tr>
