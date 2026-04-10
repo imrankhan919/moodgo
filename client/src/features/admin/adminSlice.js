@@ -181,6 +181,23 @@ const adminSlice = createSlice({
                 state.adminError = true
                 state.adminErrorMessage = action.payload
             })
+            .addCase(couponUpdate.pending, (state, action) => {
+                state.adminLoading = true
+                state.adminSuccess = false
+                state.adminError = false
+            })
+            .addCase(couponUpdate.fulfilled, (state, action) => {
+                state.adminLoading = false
+                state.adminSuccess = true
+                state.coupons = state.coupons.map(coupon => coupon._id === action.payload._id ? action.payload : coupon)
+                state.adminError = false
+            })
+            .addCase(couponUpdate.rejected, (state, action) => {
+                state.adminLoading = false
+                state.adminSuccess = false
+                state.adminError = true
+                state.adminErrorMessage = action.payload
+            })
     }
 });
 
@@ -278,6 +295,16 @@ export const userUpdate = createAsyncThunk("ADMIN/UPDATE/USER", async (update, t
     let token = thunkAPI.getState().auth.user.token
     try {
         return await adminService.updateUser(update, token)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const couponUpdate = createAsyncThunk("ADMIN/UPDATE/COUPON", async (update, thunkAPI) => {
+    let token = thunkAPI.getState().auth.user.token
+    try {
+        return await adminService.updateCoupon(update, token)
     } catch (error) {
         let message = error.response.data.message
         return thunkAPI.rejectWithValue(message)

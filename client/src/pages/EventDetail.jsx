@@ -35,6 +35,9 @@ function EventDetail() {
       couponCode: couponCode || null
     }))
 
+    if (orderSuccess && order) {
+      navigate("/auth/book/" + eid)
+    }
 
 
   }
@@ -45,9 +48,6 @@ function EventDetail() {
   useEffect(() => {
 
 
-    if (orderSuccess && order) {
-      navigate("/auth/book/" + eid)
-    }
 
 
     if (!eventError && !eventErrorMessage) {

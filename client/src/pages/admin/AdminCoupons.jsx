@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { addCoupon, getAllCoupons } from "../../features/admin/adminSlice"
+import { addCoupon, couponUpdate, getAllCoupons } from "../../features/admin/adminSlice"
 import { toast } from "react-toastify"
 import LoadingScreen from "../../components/LoadingScreen"
 
@@ -40,6 +40,11 @@ function AdminCoupons() {
 
 
   }
+
+  const handleCouponUpdate = (couponDetails) => {
+    dispatch(couponUpdate(couponDetails))
+  }
+
 
   useEffect(() => {
 
@@ -124,7 +129,7 @@ function AdminCoupons() {
                   </td>
                   <td className="px-6 py-4">
                     {/* Toggle Switch */}
-                    <div className={`relative w-11 h-6 rounded-full cursor-pointer transition-all duration-300 ${coupon.isActive ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6]' : 'bg-[#1F1F2E]'}`}>
+                    <div onClick={() => handleCouponUpdate({ cid: coupon._id, isActive: coupon.isActive ? false : true })} className={`relative w-11 h-6 rounded-full cursor-pointer transition-all duration-300 ${coupon.isActive ? 'bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6]' : 'bg-[#1F1F2E]'}`}>
                       <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${coupon.isActive ? 'left-[22px]' : 'left-0.5'}`} />
                     </div>
                   </td>

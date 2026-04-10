@@ -1,11 +1,15 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllUsers, userUpdate } from '../../features/admin/adminSlice'
 import { toast } from 'react-toastify'
 import LoadingScreen from '../../components/LoadingScreen'
+import UserModal from '../../components/UserModal'
 
 
 function AdminUsers() {
+
+  const [showModal, setShowModal] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
 
   const { users, adminLoading, adminSuccess, adminError, adminErrorMessage } = useSelector(state => state.admin)
 
@@ -15,6 +19,10 @@ function AdminUsers() {
     dispatch(userUpdate(update))
   }
 
+  const handleModal = (user = null) => {
+    setCurrentUser(user)
+    setShowModal(showModal ? false : true)
+  }
 
 
   useEffect(() => {
@@ -90,67 +98,18 @@ function AdminUsers() {
                   <td className="px-6 py-4 text-[#6B7280] text-sm">{new Date(user.createdAt).toLocaleDateString('en-IN')}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      {/* Edit User Modal */}
-                      <details className="relative">
-                        <summary className="list-none cursor-pointer p-2 rounded-lg hover:bg-[#4F8EF7]/10 text-[#6B7280] hover:text-[#4F8EF7] transition-all duration-300" title="Edit">
+
+                      <div className="relative">
+                        <div onClick={() => handleModal(user)} className="list-none cursor-pointer p-2 rounded-lg hover:bg-[#4F8EF7]/10 text-[#6B7280] hover:text-[#4F8EF7] transition-all duration-300" title="Edit">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        </summary>
-                        {/* Modal Overlay */}
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeInUp_0.2s_ease_forwards]">
-                          <div className="bg-[#111118] border border-[#1F1F2E] rounded-2xl shadow-2xl w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
-                            {/* Header */}
-                            <div className="flex items-center justify-between px-6 py-4 border-b border-[#1F1F2E]">
-                              <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Syne, sans-serif' }}>Edit User</h3>
-                              <summary className="list-none cursor-pointer p-1.5 rounded-lg hover:bg-[#1F1F2E] text-[#6B7280] hover:text-white transition-all duration-300">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                              </summary>
-                            </div>
-                            {/* Body */}
-                            <div className="p-6 space-y-4">
-                              <div className="flex items-center gap-4 mb-2">
-                                <img src={user.avatar} alt={user.name} className="w-14 h-14 rounded-full border-2 border-[#1F1F2E]" />
-                                <div>
-                                  <p className="text-white font-medium">{user.name}</p>
-                                  <p className="text-[#6B7280] text-sm">{user.email}</p>
-                                </div>
-                              </div>
-                              <div>
-                                <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Full Name</label>
-                                <input type="text" defaultValue={user.name} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#4F8EF7] transition-all duration-300" />
-                              </div>
-                              <div>
-                                <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Email</label>
-                                <input type="email" defaultValue={user.email} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#4F8EF7] transition-all duration-300" />
-                              </div>
-                              <div>
-                                <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">Role</label>
-                                <select defaultValue={user.role} className="w-full bg-[#0A0A0F] border border-[#1F1F2E] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#4F8EF7] transition-all duration-300 cursor-pointer">
-                                  <option value="user">User</option>
-                                  <option value="admin">Admin</option>
-                                </select>
-                              </div>
-                            </div>
-                            {/* Footer */}
-                            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#1F1F2E]">
-                              <summary className="list-none cursor-pointer px-5 py-2.5 border border-[#1F1F2E] text-[#6B7280] text-sm rounded-xl hover:text-white hover:border-[#6B7280] transition-all duration-300">
-                                Cancel
-                              </summary>
-                              <button className="px-5 py-2.5 bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:shadow-[0_0_20px_rgba(79,142,247,0.3)] hover:scale-105 transition-all duration-300">
-                                Save Changes
-                              </button>
-                            </div>
-                          </div>
                         </div>
-                      </details>
-
-
-                      <div className={`w-5 h-5 mx-auto mb-4 rounded-full flex items-center justify-center ${user.status === 'active' ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
-                        {user.isActive ? (
-                          <svg onClick={() => handleBanUnbanUser({ uid: user._id, isActive: false })} className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                        ) : (
-                          <svg onClick={() => handleBanUnbanUser({ uid: user._id, isActive: true })} className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        )}
+                        {/* Modal Overlay */}
+                        {/* Edit User Modal */}
+                        {
+                          showModal && <UserModal currentUser={currentUser} handleModal={handleModal} />
+                        }
                       </div>
+                      <button onClick={() => handleBanUnbanUser({ uid: user._id, isActive: user.isActive ? false : true })} className={user.isActive ? 'bg-red-500 p-1 text-sm rounded-md text-white hover:bg-red-600 cursor-pointer' : 'bg-green-500 p-1 text-sm rounded-md text-black hover:bg-green-600 cursor-pointer'}>{user.isActive ? "Ban User" : "Unban User"}</button>
                     </div>
                   </td>
                 </tr>
