@@ -5,6 +5,7 @@ let userExist = JSON.parse(localStorage.getItem('user'))
 
 const initialState = {
     user: userExist || null,
+    profileData: {},
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -57,6 +58,22 @@ const authSlice = createSlice({
                 state.isError = false
                 state.message = ""
                 state.user = null
+            }).addCase(getProfile.pending, (state, action) => {
+                state.isLoading = true
+                state.isSuccess = false
+                state.isError = false
+            })
+            .addCase(getProfile.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.profileData = action.payload
+                state.isError = false
+            })
+            .addCase(getProfile.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.message = action.payload
             })
     }
 });
@@ -94,4 +111,20 @@ export const loginUser = createAsyncThunk("AUTH/LOGIN", async (formData, thunkAP
 // Logout User
 export const logoutUser = createAsyncThunk("AUTH/LOGOUT", async () => {
     localStorage.removeItem('user')
+})
+
+
+// Get Profile
+export const getProfile = createAsyncThunk("GET/PROFILE", async (uid, thunkAPI) => {
+
+    let token = thunkAPI.getState().auth.user.token
+
+    try {
+        return await authService.fetchProfile(uid, token)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+
+
 })

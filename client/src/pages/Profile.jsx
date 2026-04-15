@@ -3,10 +3,12 @@ import { orders } from '../data/mockData'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { getTickets, ticketCancel } from '../features/orders/orderSlice'
+import { getProfile } from '../features/auth/authSlice'
+import { toast } from 'react-toastify'
 
 function Profile() {
 
-  const { user } = useSelector(state => state.auth)
+  const { user, profileData, isError, message } = useSelector(state => state.auth)
   const { orders, orderLoading, orderSuccess, orderError, orderErrorMessage } = useSelector(state => state.order)
 
   const dispatch = useDispatch()
@@ -27,6 +29,10 @@ function Profile() {
 
   useEffect(() => {
 
+    if (!isError) {
+      dispatch(getProfile(user._id))
+    }
+
     if (!orderError) {
       dispatch(getTickets())
     }
@@ -40,7 +46,12 @@ function Profile() {
       navigate("/admin")
     }
 
-  }, [user])
+    if (isError && message || orderError && orderErrorMessage) {
+      toast.error(message || orderErrorMessage)
+    }
+
+
+  }, [user, isError, message, orderError, orderErrorMessage, orders])
 
 
   return (
@@ -65,9 +76,9 @@ function Profile() {
         {/* Stats Row */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           {[
-            { label: 'Available Credits', value: user.credits },
-            { label: 'Events Attended', value: 12 },
-            { label: 'Reviews Written', value: 7 }
+            { label: 'Available Credits', value: profileData?.user?.credits },
+            { label: 'Events Attended', value: profileData?.events?.length },
+            { label: 'Reviews Written', value: profileData?.comments?.length }
           ].map((stat, i) => (
             <div key={i} className="bg-[#111118] rounded-xl border border-[#1F1F2E] p-4 text-center">
               <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] bg-clip-text text-transparent" style={{ fontFamily: 'Syne, sans-serif' }}>{stat.value}</p>

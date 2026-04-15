@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { getEvent, getEventComments } from '../features/event/eventSlice'
 import { toast } from 'react-toastify'
 import { applyCoupon, ticketBook } from '../features/orders/orderSlice'
+import CommentForm from '../components/CommentForm'
 
 function EventDetail() {
   const { eid } = useParams()
@@ -115,6 +116,11 @@ function EventDetail() {
               <h2 className="text-xl font-bold text-white mb-4" style={{ fontFamily: 'Syne, sans-serif' }}>About This Event</h2>
               <p className="text-[#9CA3AF] text-sm leading-relaxed">{event.description}</p>
             </div>
+
+            {/* Comment Form */}
+            {
+              user && <CommentForm />
+            }
 
             {/* Comments */}
             <div>

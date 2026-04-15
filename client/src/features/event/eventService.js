@@ -18,6 +18,20 @@ const fetchEventComments = async (eid) => {
 }
 
 
-const eventService = { fetchEvents, fetchEvent, fetchEventComments }
+const createComment = async (formData, token) => {
+
+    let options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.post(`/api/comment/${formData.eventId}`, formData, options)
+    return response.data
+}
+
+
+
+const eventService = { fetchEvents, fetchEvent, fetchEventComments, createComment }
 
 export default eventService

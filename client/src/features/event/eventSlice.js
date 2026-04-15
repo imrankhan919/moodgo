@@ -68,6 +68,23 @@ const eventSlice = createSlice({
                 state.eventError = true
                 state.eventErrorMessage = action.payload
             })
+            .addCase(addEventComment.pending, (state, action) => {
+                state.eventLoading = true
+                state.eventSuccess = false
+                state.eventError = false
+            })
+            .addCase(addEventComment.fulfilled, (state, action) => {
+                state.eventLoading = false
+                state.eventSuccess = true
+                state.eventComments = [action.payload, ...state.eventComments]
+                state.eventError = false
+            })
+            .addCase(addEventComment.rejected, (state, action) => {
+                state.eventLoading = false
+                state.eventSuccess = false
+                state.eventError = true
+                state.eventErrorMessage = action.payload
+            })
     }
 });
 
@@ -102,6 +119,21 @@ export const getEvent = createAsyncThunk("EVENT/FETCH", async (eid, thunkAPI) =>
 export const getEventComments = createAsyncThunk("EVENT/FETCH/COMENTS", async (eid, thunkAPI) => {
     try {
         return await eventService.fetchEventComments(eid)
+    } catch (error) {
+        let message = error.response.data.message
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+
+
+// Add Event Comments
+export const addEventComment = createAsyncThunk("EVENT/ADD/COMENTS", async (formData, thunkAPI) => {
+
+    let token = thunkAPI.getState().auth.user.token
+
+    try {
+        return await eventService.createComment(formData, token)
     } catch (error) {
         let message = error.response.data.message
         return thunkAPI.rejectWithValue(message)
