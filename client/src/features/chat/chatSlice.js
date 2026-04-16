@@ -19,7 +19,7 @@ const chatSlice = createSlice({
         sendFromUserMessage: (state, action) => {
             return {
                 ...state,
-                chatResponses: [action.payload, ...state.chatResponses]
+                chatResponses: [...state.chatResponses, action.payload]
             }
         }
     },
@@ -33,7 +33,7 @@ const chatSlice = createSlice({
             .addCase(sendMessage.fulfilled, (state, action) => {
                 state.chatLoading = false
                 state.chatSuccess = true
-                state.chatResponses = [action.payload, ...state.chatResponses]
+                state.chatResponses = [...state.chatResponses, action.payload]
                 state.chatError = false
             })
             .addCase(sendMessage.rejected, (state, action) => {

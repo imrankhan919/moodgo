@@ -4,7 +4,7 @@ import { useState } from "react"
 
 function ChatWidget() {
 
-  const { chatResponses } = useSelector(state => state.chat)
+  const { chatResponses, chatLoading } = useSelector(state => state.chat)
 
 
   const [message, setMessage] = useState("")
@@ -47,7 +47,7 @@ function ChatWidget() {
               <h4 className="text-white text-sm font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>MoodGo AI</h4>
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-[pulse-ring_2s_ease-in-out_infinite]" />
-                <span className="text-emerald-400 text-[10px]" style={{ fontFamily: 'DM Sans, sans-serif' }}>Online</span>
+                <span className="text-emerald-400 text-[10px]" style={{ fontFamily: 'DM Sans, sans-serif' }}>{chatLoading ? "Typing..." : "Online"}</span>
               </div>
             </div>
           </div>
@@ -57,34 +57,26 @@ function ChatWidget() {
             {/* AI Welcome */}
             {
               chatResponses.map((chat, index) => {
+                return (
+                  <div className="flex gap-2 justify-end">
+                    {
+                      chat.sender === "ai" && (
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#8B5CF6] flex items-center justify-center flex-shrink-0">
+                          <span className="text-[10px]">🤖</span>
+                        </div>
+                      )
+                    }
+                    <div className={chat.sender === "ai" ? "bg-[#1F1F2E] rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]" : "bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-2xl rounded-tr-sm px-4 py-3 max-w-[85%] justify-end"}>
+                      <p className="text-white text-sm leading-relaxed" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                        {chat.message}
+                      </p>
+                    </div>
+                  </div>
+                )
 
-                if (chat.sender === "ai") {
-                  return (
-                    <div className="flex gap-2">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4F8EF7] to-[#8B5CF6] flex items-center justify-center flex-shrink-0">
-                        <span className="text-[10px]">🤖</span>
-                      </div>
-                      <div className="bg-[#1F1F2E] rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
-                        <p className="text-white text-sm leading-relaxed" style={{ fontFamily: 'DM Sans, sans-serif' }}>
-                          {chat.message}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                } else {
-                  return (
-                    <div className="flex justify-end">
-                      <div className="bg-gradient-to-r from-[#4F8EF7] to-[#8B5CF6] rounded-2xl rounded-tr-sm px-4 py-3 max-w-[85%]">
-                        <p className="text-white text-sm" style={{ fontFamily: 'DM Sans, sans-serif' }}>What music events are near me?</p>
-                      </div>
-                    </div>
-                  )
-                }
 
               })
             }
-
-            {/* User Message */}
 
 
           </div>
